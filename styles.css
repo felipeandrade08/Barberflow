@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-sans bg-slate-900 text-slate-50 transition-colors duration-300;
+  }
+
+  html:not(.dark) body {
+    @apply bg-slate-100 text-slate-900;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-slate-800/70 backdrop-blur-xl border border-white/10;
+  }
+
+  html:not(.dark) .glass {
+    @apply bg-white/80 border-black/5 shadow-lg;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .font-serif {
+    font-family: 'Playfair Display', serif;
+  }
+
+  /* Custom scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-slate-700 rounded-full;
+  }
+
+  html:not(.dark) .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-slate-300;
+  }
+}
