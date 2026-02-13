@@ -456,17 +456,17 @@ Desenvolvido com ❤️ para modernizar a gestão de barbearias.
 
 Encontrou um bug? Tem uma sugestão?
 
-- 🐛 [Reportar Bug](https://github.com/seu-usuario/barberflow/issues)
-- 💡 [Solicitar Feature](https://github.com/seu-usuario/barberflow/issues)
-- 📧 Email: suporte@barberflow.com
+- 🐛 [Reportar Bug](https://github.com/felipeandrade08/barberflow/issues)
+- 💡 [Solicitar Feature](https://github.com/felipeandrade08/barberflow/issues)
+- 📧 Email: felipe.pessoall2026@gmail.com
 
 ---
 
 ## 📊 Status do Projeto
 
-![GitHub last commit](https://img.shields.io/github/last-commit/seu-usuario/barberflow)
-![GitHub issues](https://img.shields.io/github/issues/seu-usuario/barberflow)
-![GitHub pull requests](https://img.shields.io/github/issues-pr/seu-usuario/barberflow)
+![GitHub last commit](https://img.shields.io/github/last-commit/felipeandrade08/barberflow)
+![GitHub issues](https://img.shields.io/github/issues/felipeandrade08/barberflow)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/felipeandrade08/barberflow)
 
 ---
 
