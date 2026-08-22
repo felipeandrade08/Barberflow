@@ -1,0 +1,11 @@
+{
+  "name": "BarberFlow - Premium Scheduling System",
+  "description": "A comprehensive barbershop management and scheduling system featuring a modern glassmorphism UI, client portal, and advanced administrative dashboard.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "permissions": [
+    "notifications"
+  ]
+}
