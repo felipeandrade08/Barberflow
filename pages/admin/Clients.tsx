@@ -4,7 +4,7 @@ import { useApp } from '../../context/AppContext';
 import { Search, User, Mail, Calendar, CalendarPlus } from 'lucide-react';
 
 const AdminClients: React.FC = () => {
-  const { users, bookings, setPreSelectedClientId } = useApp();
+  const { users, bookings, settings, setPreSelectedClientId } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
 
   const clients = users.filter(u => u.role === 'client');
@@ -17,7 +17,7 @@ const AdminClients: React.FC = () => {
   const getClientStats = (userId: string) => {
     const userBookings = bookings.filter(b => b.userId === userId);
     const finishedBookings = userBookings.filter(b => b.status === 'finished');
-    const finishedSorted=[...finishedBookings].sort((a,b)=>`${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`));const lastBooking=finishedSorted[0]||null;const today=new Date().toISOString().slice(0,10);const nextBooking=userBookings.filter(b=>b.date>=today&&!['finished','cancelled'].includes(b.status)).sort((a,b)=>`${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`))[0]||null;
+    const finishedSorted=[...finishedBookings].sort((a,b)=>`${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`));const lastBooking=finishedSorted[0]||null;const today=new Intl.DateTimeFormat('en-CA',{timeZone:settings.timezone||'America/Sao_Paulo'}).format(new Date());const nextBooking=userBookings.filter(b=>b.date>=today&&!['finished','cancelled'].includes(b.status)).sort((a,b)=>`${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`))[0]||null;
 
     return {
       total: userBookings.length,
