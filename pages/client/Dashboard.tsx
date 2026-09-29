@@ -207,26 +207,8 @@ const ClientDashboard: React.FC = () => {
           </h2>
           
           <div className="glass rounded-[2.5rem] border border-slate-700 overflow-hidden shadow-xl">
-            <div className="h-48 bg-slate-800 relative group overflow-hidden">
-               <img 
-                 src="https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?q=80&w=2000" 
-                 className="w-full h-full object-cover opacity-30 grayscale group-hover:scale-110 transition-transform duration-700" 
-                 alt="Barbershop Location Map"
-               />
-               <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-amber-500 rounded-full blur-xl opacity-30 animate-pulse" />
-                    <MapPin className="text-amber-500 relative z-10" size={48} />
-                  </div>
-               </div>
-               <a 
-                 href={googleMapsUrl}
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 className="absolute bottom-4 right-4 bg-amber-500 text-slate-900 p-3 rounded-full shadow-lg hover:bg-amber-400 transition-all hover:scale-110"
-               >
-                 <ExternalLink size={20} />
-               </a>
+            <div className="h-40 bg-slate-900 relative flex items-center justify-center border-b border-slate-700">
+               <div className="text-center"><div className="w-16 h-16 mx-auto rounded-2xl bg-amber-500/10 flex items-center justify-center"><MapPin className="text-amber-500" size={30}/></div><p className="text-xs text-slate-500 mt-3">Endereço cadastrado pela barbearia</p></div>
             </div>
 
             <div className="p-8 space-y-6">
