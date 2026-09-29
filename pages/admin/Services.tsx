@@ -70,14 +70,14 @@ const AdminServices: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="page-title">Serviços</h1>
-          <p className="text-slate-400">Gerencie o catálogo de serviços oferecidos</p>
+          <p className="text-slate-400">Organize serviços, preços, duração e disponibilidade.</p>
         </div>
         <button
           onClick={handleOpenCreateModal}
           className="btn-primary"
         >
           <Plus size={20} />
-          <span>Novo Serviço</span>
+          <span>Novo serviço</span>
         </button>
       </div>
 
@@ -92,7 +92,7 @@ const AdminServices: React.FC = () => {
                   <button 
                     onClick={() => handleOpenEditModal(service)}
                     className="p-2 bg-slate-800/80 text-white hover:bg-amber-500 hover:text-slate-900 rounded-xl backdrop-blur-md transition-all border border-white/10"
-                    title="Editar Serviço"
+                    title="Editar serviço"
                   >
                     <Edit2 size={16} />
                   </button>
@@ -163,7 +163,7 @@ const AdminServices: React.FC = () => {
           <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)} />
           <form onSubmit={handleSubmit} className="relative glass p-8 rounded-[2.5rem] w-full max-w-lg border border-slate-700 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center">
-              <h3 className="text-2xl font-bold text-white">{editingServiceId ? 'Editar Serviço' : 'Cadastrar Novo Serviço'}</h3>
+              <h3 className="text-2xl font-bold text-white">{editingServiceId ? 'Editar Serviço' : 'Novo serviço'}</h3>
               <button type="button" onClick={() => setIsModalOpen(false)} className="text-slate-500 hover:text-white transition-colors">
                 <X size={24} />
               </button>
@@ -184,7 +184,7 @@ const AdminServices: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Nome do Serviço</label>
+                <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Nome do serviço</label>
                 <input
                   required
                   type="text"
@@ -243,13 +243,13 @@ const AdminServices: React.FC = () => {
               type="submit"
               className="w-full bg-amber-500 text-slate-900 py-4 rounded-2xl font-bold text-lg hover:bg-amber-400 transition-all shadow-lg active:scale-95"
             >
-              {editingServiceId ? 'Salvar Alterações' : 'Criar Serviço'}
+              {editingServiceId ? 'Salvar alterações' : 'Criar serviço'}
             </button>
           </form>
         </div>
       )}
 
-      {/* Confirmation Dialog Modal (Manteve-se inalterado) */}
+      
       {serviceToDelete && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-md" onClick={() => setServiceToDelete(null)} />
@@ -261,7 +261,7 @@ const AdminServices: React.FC = () => {
             </div>
             
             <div>
-              <h3 className="text-2xl font-bold text-white mb-2">Excluir Serviço?</h3>
+              <h3 className="text-2xl font-bold text-white mb-2">Excluir serviço?</h3>
               <p className="text-slate-400 text-sm leading-relaxed px-2">
                 Tem certeza que deseja remover <span className="text-white font-bold">"{serviceToDelete.name}"</span> do catálogo? Esta ação não pode ser desfeita.
               </p>
