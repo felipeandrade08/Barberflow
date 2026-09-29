@@ -32,7 +32,7 @@ const AdminClients: React.FC = () => {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-white">Clientes</h1>
+          <h1 className="page-title">Clientes</h1>
           <p className="text-slate-400">Gerenciamento da base de clientes cadastrados</p>
         </div>
         <div className="relative">
@@ -47,7 +47,7 @@ const AdminClients: React.FC = () => {
         </div>
       </div>
 
-      <div className="glass rounded-3xl border border-slate-700 overflow-hidden">
+      <div className="surface overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
