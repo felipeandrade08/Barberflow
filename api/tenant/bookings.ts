@@ -11,10 +11,16 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
       const client=await db().connect();
       try{
         await client.query('BEGIN');
+        const tenant=(await client.query('SELECT open_time,close_time,booking_interval,cancellation_hours,off_days,subscription_status FROM tenants WHERE id=$1 AND deleted_at IS NULL',[s.tenantId])).rows[0];
+        if(!tenant||!['active','trialing'].includes(tenant.subscription_status)){await client.query('ROLLBACK');return res.status(403).json({error:'Agenda temporariamente indisponível.'});}
         const service=(await client.query('SELECT id,name,price,duration FROM services WHERE id=$1 AND tenant_id=$2 AND active=true',[x.serviceId,s.tenantId])).rows[0];
         if(!service){await client.query('ROLLBACK');return res.status(400).json({error:'Serviço inválido.'});}
         const professional=(await client.query('SELECT id FROM professionals WHERE id=$1 AND tenant_id=$2 AND active=true',[x.professionalId,s.tenantId])).rows[0];
         if(!professional){await client.query('ROLLBACK');return res.status(400).json({error:'Profissional inválido.'});}
+        if((tenant.off_days||[]).includes(x.date)){await client.query('ROLLBACK');return res.status(409).json({error:'A barbearia não atende nesta data.'});}
+        const schedule=(await client.query(`SELECT ($1::date + $2::time) start_at, ($1::date + $2::time + ($3||' minutes')::interval) end_at, ($1::date + $4::time) open_at, ($1::date + $5::time) close_at`,[x.date,x.time,service.duration,tenant.open_time,tenant.close_time])).rows[0];
+        if(schedule.start_at<new Date()){await client.query('ROLLBACK');return res.status(409).json({error:'Não é possível agendar um horário que já passou.'});}
+        if(schedule.start_at<schedule.open_at||schedule.end_at>schedule.close_at){await client.query('ROLLBACK');return res.status(409).json({error:'Horário fora do expediente ou serviço ultrapassa o fechamento.'});}
         await client.query('SELECT pg_advisory_xact_lock(hashtext($1))',[String(s.tenantId)+':'+String(x.professionalId)+':'+String(x.date)]);
         const conflict=await client.query(`SELECT id FROM bookings WHERE tenant_id=$1 AND professional_id=$2 AND date=$3 AND status IN ('pending','confirmed') AND time < $4::time + ($5||' minutes')::interval AND time + (duration||' minutes')::interval > $4::time LIMIT 1`,[s.tenantId,x.professionalId,x.date,x.time,service.duration]);
         if(conflict.rowCount){await client.query('ROLLBACK');return res.status(409).json({error:'Este horário já está ocupado.'});}
@@ -31,8 +37,10 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
       const client=await db().connect();
       try{
         await client.query('BEGIN');
-        const before=(await client.query(`SELECT id,user_id,date,status FROM bookings WHERE id=$1 AND tenant_id=$2 AND (user_id=$3 OR $4='admin') FOR UPDATE`,[x.id,s.tenantId,s.userId,s.role])).rows[0];
+        const before=(await client.query(`SELECT b.id,b.user_id,b.date,b.time,b.status,t.cancellation_hours FROM bookings b JOIN tenants t ON t.id=b.tenant_id WHERE b.id=$1 AND tenant_id=$2 AND (user_id=$3 OR $4='admin') FOR UPDATE`,[x.id,s.tenantId,s.userId,s.role])).rows[0];
         if(!before){await client.query('ROLLBACK');return res.status(404).json({error:'Agendamento não encontrado.'});}
+        if(s.role!=='admin' && x.status==='cancelled' && before.status==='finished'){await client.query('ROLLBACK');return res.status(409).json({error:'Atendimento finalizado não pode ser cancelado.'});}
+        if(s.role!=='admin' && x.status==='cancelled' && Number(before.cancellation_hours)>0){const start=new Date(`${String(before.date).slice(0,10)}T${String(before.time).slice(0,8)}`);if(start.getTime()-Date.now()<Number(before.cancellation_hours)*3600000){await client.query('ROLLBACK');return res.status(409).json({error:`Cancelamento permitido até ${before.cancellation_hours}h antes do horário.`});}}
         if(s.role!=='admin' && x.status && x.status!=='cancelled') {await client.query('ROLLBACK');return res.status(403).json({error:'Cliente só pode cancelar o próprio agendamento.'});}
         if(s.role!=='admin' && (x.paymentMethod!==undefined || x.observation!==undefined)) {await client.query('ROLLBACK');return res.status(403).json({error:'Alteração restrita ao administrador.'});}
         if(x.ratingStars!==undefined && (!Number.isInteger(x.ratingStars)||x.ratingStars<1||x.ratingStars>5)){await client.query('ROLLBACK');return res.status(400).json({error:'Avaliação deve ter entre 1 e 5 estrelas.'});}
