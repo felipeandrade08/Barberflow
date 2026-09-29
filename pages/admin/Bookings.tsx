@@ -26,13 +26,12 @@ const AdminBookings: React.FC = () => {
     }
   };
 
-  const handleFinishPayment = (id: string, method: PaymentMethod) => {
+  const handleFinishPayment = async (id: string, method: PaymentMethod) => {
     const booking = bookings.find(b => b.id === id);
-    updateBooking(id, { status: 'finished', paymentMethod: method });
+    const ok = await updateBooking(id, { status: 'finished', paymentMethod: method });
+    if (!ok) return;
     setShowPaymentModal(null);
-    if (booking) {
-      setShowFollowUpModal(booking);
-    }
+    if (booking) setShowFollowUpModal(booking);
   };
 
   const handleScheduleFollowUp = () => {
