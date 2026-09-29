@@ -8,6 +8,7 @@ const AdminBookings: React.FC = () => {
   const { bookings, updateBooking, setPreSelectedClientId, currentUser } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [dateFilter,setDateFilter]=useState<string>('upcoming');
   const [showPaymentModal, setShowPaymentModal] = useState<string | null>(null);
   const [showFollowUpModal, setShowFollowUpModal] = useState<Booking | null>(null);
 
@@ -15,8 +16,9 @@ const AdminBookings: React.FC = () => {
     const matchesSearch = b.userName.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           b.serviceName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || b.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+    const today=new Date().toISOString().slice(0,10);const matchesDate=dateFilter==='all'||(dateFilter==='today'&&b.date===today)||(dateFilter==='upcoming'&&b.date>=today&&!['finished','cancelled'].includes(b.status))||(dateFilter==='history'&&(b.date<today||['finished','cancelled'].includes(b.status)));
+    return matchesSearch && matchesStatus && matchesDate;
+  }).sort((a,b)=>dateFilter==='history'?`${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`):`${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
 
   const handleStatusChange = (id: string, status: BookingStatus) => {
     if (status === 'finished') {
@@ -72,6 +74,7 @@ const AdminBookings: React.FC = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          <select className="bg-slate-800 border border-slate-700 rounded-xl py-2 px-4 text-sm focus:ring-2 focus:ring-amber-500 outline-none" value={dateFilter} onChange={e=>setDateFilter(e.target.value)}><option value="upcoming">Próximos</option><option value="today">Hoje</option><option value="history">Histórico</option><option value="all">Todas as datas</option></select>
           <select
             className="bg-slate-800 border border-slate-700 rounded-xl py-2 px-4 text-sm focus:ring-2 focus:ring-amber-500 outline-none"
             value={statusFilter}
@@ -111,7 +114,7 @@ const AdminBookings: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-slate-300">{b.serviceName}</span>
+                    <span className="text-sm text-slate-300">{b.serviceName}</span><p className="text-[11px] text-slate-500 mt-1">{b.professionalName}</p>
                     <p className="text-xs text-slate-500">R$ {b.servicePrice}</p>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
