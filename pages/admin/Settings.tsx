@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Save, Clock, MapPin, Phone, Calendar, Trash2, Plus, QrCode, Download, Share2, Type } from 'lucide-react';
+import { Save, Clock, MapPin, Phone, Calendar, Trash2, Plus, QrCode, Download, Share2, MessageCircle } from 'lucide-react';
 import { QRCodeCanvas } from 'qrcode.react';
 
 const AdminSettings: React.FC = () => {
@@ -181,6 +181,8 @@ const AdminSettings: React.FC = () => {
                   >
                     <Share2 size={18} />
                     <span>Copiar Link</span>
+                  </button>
+                  {formData.whatsapp&&<a href={`https://wa.me/?text=${encodeURIComponent(`Agende seu horário na ${formData.name}: ${defaultUrl}`)}`} target="_blank" rel="noreferrer" className="flex-1 bg-emerald-500/15 text-emerald-300 py-3 rounded-xl font-bold text-sm flex items-center justify-center gap-2 border border-emerald-500/20"><MessageCircle size={18}/>Compartilhar</a>}
                   </button>
                 </div>
               </div>
