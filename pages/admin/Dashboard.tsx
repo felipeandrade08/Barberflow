@@ -5,7 +5,7 @@ import {ResponsiveContainer,AreaChart,Area,XAxis,YAxis,Tooltip,CartesianGrid} fr
 
 const money=(v:number)=>`R$ ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
 const AdminDashboard:React.FC=()=>{
- const {bookings,users,professionals,currentUser}=useApp(); const now=new Date(); const today=now.toISOString().slice(0,10); const month=now.toISOString().slice(0,7);
+ const {bookings,users,professionals,currentUser,settings}=useApp(); const now=new Date(); const today=new Intl.DateTimeFormat('en-CA',{timeZone:settings.timezone||'America/Sao_Paulo'}).format(now); const month=today.slice(0,7);
  const clients=users.filter(u=>u.role==='client'); const todayBookings=bookings.filter(b=>b.date===today&&b.status!=='cancelled').sort((a,b)=>a.time.localeCompare(b.time));
  const monthFinished=bookings.filter(b=>b.date.startsWith(month)&&b.status==='finished'); const revenue=monthFinished.reduce((s,b)=>s+b.servicePrice,0); const todayRevenue=bookings.filter(b=>b.date===today&&b.status==='finished').reduce((s,b)=>s+b.servicePrice,0);
  const avg=monthFinished.length?revenue/monthFinished.length:0; const pending=bookings.filter(b=>b.status==='pending').length;
