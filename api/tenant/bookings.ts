@@ -40,7 +40,7 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
       const client=await db().connect();
       try{
         await client.query('BEGIN');
-        const before=(await client.query(`SELECT b.id,b.user_id,b.date,b.time,b.status,t.cancellation_hours FROM bookings b JOIN tenants t ON t.id=b.tenant_id WHERE b.id=$1 AND b.tenant_id=$2 AND (b.user_id=$3 OR $4='admin') FOR UPDATE`,[x.id,s.tenantId,s.userId,s.role])).rows[0];
+        const before=(await client.query(`SELECT b.id,b.user_id,b.date,b.time,b.status,b.rating_stars,t.cancellation_hours FROM bookings b JOIN tenants t ON t.id=b.tenant_id WHERE b.id=$1 AND b.tenant_id=$2 AND (b.user_id=$3 OR $4='admin') FOR UPDATE`,[x.id,s.tenantId,s.userId,s.role])).rows[0];
         if(!before){await client.query('ROLLBACK');return res.status(404).json({error:'Agendamento não encontrado.'});}
         if(x.status && x.status!==before.status){
           const transitions:Record<string,string[]>={pending:['confirmed','cancelled'],confirmed:['in_progress','cancelled'],in_progress:['finished'],finished:[],cancelled:[]};
@@ -51,6 +51,8 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
         if(s.role!=='admin' && x.status && x.status!==before.status && x.status!=='cancelled') {await client.query('ROLLBACK');return res.status(403).json({error:'Cliente só pode cancelar o próprio agendamento.'});}
         if(s.role!=='admin' && (x.paymentMethod!==undefined || x.observation!==undefined)) {await client.query('ROLLBACK');return res.status(403).json({error:'Alteração restrita ao administrador.'});}
         if(x.ratingStars!==undefined && (!Number.isInteger(x.ratingStars)||x.ratingStars<1||x.ratingStars>5)){await client.query('ROLLBACK');return res.status(400).json({error:'Avaliação deve ter entre 1 e 5 estrelas.'});}
+        if(x.ratingStars!==undefined && s.role==='admin'){await client.query('ROLLBACK');return res.status(403).json({error:'A avaliação pertence ao cliente.'});}
+        if(x.ratingStars!==undefined && before.rating_stars){await client.query('ROLLBACK');return res.status(409).json({error:'Este atendimento já foi avaliado.'});}
         if(s.role!=='admin' && x.ratingStars!==undefined && before.status!=='finished'){await client.query('ROLLBACK');return res.status(409).json({error:'Só é possível avaliar um atendimento finalizado.'});}
         const r=await client.query(`UPDATE bookings SET status=COALESCE($1,status),payment_method=COALESCE($2,payment_method),observation=COALESCE($3,observation),rating_stars=COALESCE($4,rating_stars),rating_comment=COALESCE($5,rating_comment),rating_date=CASE WHEN $4 IS NOT NULL THEN now() ELSE rating_date END,updated_at=now() WHERE id=$6 RETURNING *`,[x.status||null,x.paymentMethod??null,x.observation??null,x.ratingStars??null,x.ratingComment??null,x.id]);
         if(x.status==='finished'&&before.status!=='finished') await client.query(`UPDATE users SET loyalty_points=COALESCE(loyalty_points,0)+1,last_visit=$1 WHERE id=$2 AND tenant_id=$3`,[before.date,before.user_id,s.tenantId]);
