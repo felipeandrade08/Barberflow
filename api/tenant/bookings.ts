@@ -25,7 +25,7 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
         if(schedule.start_at<new Date()){await client.query('ROLLBACK');return res.status(409).json({error:'Não é possível agendar um horário que já passou.'});}
         if(schedule.start_at<schedule.open_at||schedule.end_at>schedule.close_at){await client.query('ROLLBACK');return res.status(409).json({error:'Horário fora do expediente ou serviço ultrapassa o fechamento.'});}
         await client.query('SELECT pg_advisory_xact_lock(hashtext($1))',[String(s.tenantId)+':'+String(x.professionalId)+':'+String(x.date)]);
-        const conflict=await client.query(`SELECT id FROM bookings WHERE tenant_id=$1 AND professional_id=$2 AND date=$3 AND status IN ('pending','confirmed') AND time < $4::time + ($5||' minutes')::interval AND time + (duration||' minutes')::interval > $4::time LIMIT 1`,[s.tenantId,x.professionalId,x.date,x.time,service.duration]);
+        const conflict=await client.query(`SELECT id FROM bookings WHERE tenant_id=$1 AND professional_id=$2 AND date=$3 AND status IN ('pending','confirmed','in_progress') AND time < $4::time + ($5||' minutes')::interval AND time + (duration||' minutes')::interval > $4::time LIMIT 1`,[s.tenantId,x.professionalId,x.date,x.time,service.duration]);
         if(conflict.rowCount){await client.query('ROLLBACK');return res.status(409).json({error:'Este horário já está ocupado.'});}
         const userId=s.role==='admin'&&x.userId?x.userId:s.userId;
         const user=(await client.query('SELECT id FROM users WHERE id=$1 AND tenant_id=$2',[userId,s.tenantId])).rows[0];
