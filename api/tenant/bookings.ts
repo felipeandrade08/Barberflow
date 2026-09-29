@@ -7,7 +7,7 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
   try{
     if(req.method==='POST'){
       const x=req.body||{};
-      if(!x.serviceId||!x.professionalId||!x.date||!x.time) return res.status(400).json({error:'Serviço, profissional, data e horário são obrigatórios.'});
+      if(!x.serviceId||!x.professionalId||!/^\d{4}-\d{2}-\d{2}$/.test(String(x.date||''))||!/^\d{2}:\d{2}$/.test(String(x.time||''))) return res.status(400).json({error:'Serviço, profissional, data e horário válidos são obrigatórios.'});
       const client=await db().connect();
       try{
         await client.query('BEGIN');
@@ -18,6 +18,9 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
         const professional=(await client.query('SELECT id FROM professionals WHERE id=$1 AND tenant_id=$2 AND active=true',[x.professionalId,s.tenantId])).rows[0];
         if(!professional){await client.query('ROLLBACK');return res.status(400).json({error:'Profissional inválido.'});}
         if((tenant.off_days||[]).includes(x.date)){await client.query('ROLLBACK');return res.status(409).json({error:'A barbearia não atende nesta data.'});}
+        const toMinutes=(value:string)=>{const [h,m]=String(value).slice(0,5).split(':').map(Number);return h*60+m};
+        const openMinutes=toMinutes(tenant.open_time),requestedMinutes=toMinutes(x.time),interval=Math.max(5,Number(tenant.booking_interval)||30);
+        if((requestedMinutes-openMinutes)%interval!==0){await client.query('ROLLBACK');return res.status(409).json({error:'Horário fora dos intervalos permitidos pela agenda.'});}
         const schedule=(await client.query(`SELECT ($1::date + $2::time) start_at, ($1::date + $2::time + ($3||' minutes')::interval) end_at, ($1::date + $4::time) open_at, ($1::date + $5::time) close_at`,[x.date,x.time,service.duration,tenant.open_time,tenant.close_time])).rows[0];
         if(schedule.start_at<new Date()){await client.query('ROLLBACK');return res.status(409).json({error:'Não é possível agendar um horário que já passou.'});}
         if(schedule.start_at<schedule.open_at||schedule.end_at>schedule.close_at){await client.query('ROLLBACK');return res.status(409).json({error:'Horário fora do expediente ou serviço ultrapassa o fechamento.'});}
