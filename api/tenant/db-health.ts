@@ -1,11 +1,10 @@
 import type {VercelRequest,VercelResponse} from '@vercel/node';
 import {db} from '../_lib/db';
-import {requireSession} from '../_lib/auth';
+import {requireRole} from '../_lib/authorization';
 
 export default async function handler(req:VercelRequest,res:VercelResponse){
   if(req.method!=='GET')return res.status(405).end();
-  const s=requireSession(req,res);if(!s)return;
-  if(s.role!=='admin'&&s.role!=='platform_admin')return res.status(403).json({error:'Acesso restrito.'});
+  const s=await requireRole(req,res,['admin','platform_admin']);if(!s)return;
   try{
     const r=await db().query(`SELECT current_database() database,
       to_regclass('public.tenants') IS NOT NULL tenants,
