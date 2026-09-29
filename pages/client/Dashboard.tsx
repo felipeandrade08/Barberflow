@@ -10,6 +10,9 @@ const ClientDashboard: React.FC = () => {
   const [comment, setComment] = useState('');
 
   const myBookings = bookings.filter(b => b.userId === currentUser?.id);
+  const today=new Date().toISOString().slice(0,10);
+  const upcoming=myBookings.filter(b=>!['finished','cancelled'].includes(b.status)&&b.date>=today).sort((a,b)=>`${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
+  const history=myBookings.filter(b=>['finished','cancelled'].includes(b.status)||b.date<today).sort((a,b)=>`${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`));
   const loyaltyPoints = currentUser?.loyaltyPoints || 0;
   const targetPoints = Math.max(1, settings.loyaltyTarget || 10);
   const currentCyclePoints = Math.min(loyaltyPoints,targetPoints);
@@ -53,6 +56,8 @@ const ClientDashboard: React.FC = () => {
   };
 
   const googleMapsUrl = settings.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.address)}` : '';
+
+  const BookingCard=({b}:{b:any})=><div key={b.id} className="glass p-6 rounded-3xl border border-slate-700 relative overflow-hidden flex flex-col h-full group"><div className="flex justify-between items-start mb-4"><div className="p-3 bg-amber-500/20 text-amber-500 rounded-2xl"><Scissors size={24}/></div><div className="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700">{getStatusIcon(b.status)}<span className="text-[10px] font-bold text-slate-300 uppercase">{getStatusLabel(b.status)}</span></div></div><h3 className="text-xl font-bold text-white mb-1">{b.serviceName}</h3><p className="text-slate-400 text-sm mb-4">R$ {Number(b.servicePrice).toFixed(2)}</p><div className="mt-auto space-y-2"><div className="flex items-center space-x-2 text-slate-300 text-sm"><Calendar size={14} className="text-amber-500"/><span>{new Date(b.date).toLocaleDateString('pt-BR')}</span></div><div className="flex items-center space-x-2 text-slate-300 text-sm"><Clock size={14} className="text-amber-500"/><span>{b.time}</span></div><div className="text-slate-500 text-xs mt-2 italic">Barbeiro: {b.professionalName}</div></div><div className="mt-6 flex flex-col space-y-2">{['pending','confirmed'].includes(b.status)&&<button onClick={()=>cancelBooking(b.id)} className="w-full py-2.5 rounded-xl border border-red-500/30 text-red-500 text-sm font-bold hover:bg-red-500 hover:text-white transition-all">Cancelar agendamento</button>}{b.status==='finished'&&!b.rating&&<button onClick={()=>setReviewBookingId(b.id)} className="w-full py-2.5 rounded-xl bg-amber-500 text-slate-900 text-sm font-bold">Avaliar atendimento</button>}{(b.status==='finished'||b.status==='cancelled')&&<button onClick={()=>handleBookAgain(b.serviceId)} className="w-full py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm font-bold flex items-center justify-center space-x-2"><RotateCcw size={14}/><span>Agendar novamente</span></button>}</div>{b.rating&&<div className="mt-6 p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50"><div className="flex items-center space-x-1 text-amber-500 mb-1">{[1,2,3,4,5].map(s=><Star key={s} size={12} fill={s<=b.rating.stars?'currentColor':'none'}/>)}</div><p className="text-xs text-slate-400 italic">“{b.rating.comment}”</p></div>}</div>;
 
   return (
     <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
@@ -118,85 +123,7 @@ const ClientDashboard: React.FC = () => {
             <Calendar className="mr-2 text-amber-500" size={20} />
             Meus agendamentos
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {myBookings.length > 0 ? myBookings.map((b) => (
-              <div key={b.id} className="glass p-6 rounded-3xl border border-slate-700 relative overflow-hidden flex flex-col h-full group">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="p-3 bg-amber-500/20 text-amber-500 rounded-2xl">
-                    <Scissors size={24} />
-                  </div>
-                  <div className="flex items-center space-x-2 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700">
-                    {getStatusIcon(b.status)}
-                    <span className="text-[10px] font-bold text-slate-300 uppercase">{getStatusLabel(b.status)}</span>
-                  </div>
-                </div>
-
-                <h3 className="text-xl font-bold text-white mb-1">{b.serviceName}</h3>
-                <p className="text-slate-400 text-sm mb-4">R$ {b.servicePrice.toFixed(2)}</p>
-
-                <div className="mt-auto space-y-2">
-                  <div className="flex items-center space-x-2 text-slate-300 text-sm">
-                    <Calendar size={14} className="text-amber-500" />
-                    <span>{new Date(b.date).toLocaleDateString('pt-BR')}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-slate-300 text-sm">
-                    <Clock size={14} className="text-amber-500" />
-                    <span>{b.time}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-slate-500 text-xs mt-2 italic">
-                     <span>Barbeiro: {b.professionalName}</span>
-                  </div>
-                </div>
-
-                <div className="mt-6 flex flex-col space-y-2">
-                  {['pending', 'confirmed'].includes(b.status) && (
-                    <button
-                      onClick={() => cancelBooking(b.id)}
-                      className="w-full py-2.5 rounded-xl border border-red-500/30 text-red-500 text-sm font-bold hover:bg-red-500 hover:text-white transition-all"
-                    >
-                      Cancelar agendamento
-                    </button>
-                  )}
-
-                  {b.status === 'finished' && !b.rating && (
-                    <button
-                      onClick={() => setReviewBookingId(b.id)}
-                      className="w-full py-2.5 rounded-xl bg-amber-500 text-slate-900 text-sm font-bold hover:bg-amber-400 transition-all"
-                    >
-                      Avaliar atendimento
-                    </button>
-                  )}
-
-                  {(b.status === 'finished' || b.status === 'cancelled') && (
-                    <button
-                      onClick={() => handleBookAgain(b.serviceId)}
-                      className="w-full py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm font-bold hover:bg-slate-700 transition-all flex items-center justify-center space-x-2"
-                    >
-                      <RotateCcw size={14} />
-                      <span>Agendar novamente</span>
-                    </button>
-                  )}
-                </div>
-
-                {b.rating && (
-                  <div className="mt-6 p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50">
-                    <div className="flex items-center space-x-1 text-amber-500 mb-1">
-                      {[1, 2, 3, 4, 5].map(s => (
-                        <Star key={s} size={12} fill={s <= b.rating!.stars ? "currentColor" : "none"} />
-                      ))}
-                    </div>
-                    <p className="text-xs text-slate-400 italic">"{b.rating.comment}"</p>
-                  </div>
-                )}
-              </div>
-            )) : (
-              <div className="col-span-full py-16 text-center glass rounded-3xl border border-slate-700">
-                <AlertCircle size={48} className="mx-auto text-slate-600 mb-4" />
-                <h3 className="text-xl font-bold text-white">Nenhum agendamento</h3>
-                <p className="text-slate-400 max-w-xs mx-auto mt-2">Você ainda não possui agendamentos.</p><button onClick={()=>window.location.hash='#new-booking'} className="btn-primary mt-5 mx-auto"><Calendar size={17}/>Agendar meu primeiro horário</button>
-              </div>
-            )}
-          </div>
+          <div className="space-y-8"><section><div className="flex items-center justify-between mb-4"><h3 className="font-bold text-white">Próximos horários</h3><span className="text-xs text-slate-500">{upcoming.length} agendamento{upcoming.length===1?'':'s'}</span></div><div className="grid grid-cols-1 md:grid-cols-2 gap-6">{upcoming.map(b=><BookingCard key={b.id} b={b}/>)}{!upcoming.length&&<div className="md:col-span-2 empty-state"><Calendar size={36} className="mx-auto mb-3 opacity-40"/><h3 className="text-white font-bold">Nenhum próximo horário</h3><button onClick={()=>window.location.hash='#new-booking'} className="btn-primary mt-4 mx-auto"><Calendar size={17}/>Agendar horário</button></div>}</div></section><section><div className="flex items-center justify-between mb-4"><h3 className="font-bold text-white">Histórico</h3><span className="text-xs text-slate-500">{history.length} registro{history.length===1?'':'s'}</span></div><div className="grid grid-cols-1 md:grid-cols-2 gap-6">{history.map(b=><BookingCard key={b.id} b={b}/>)}{!history.length&&<div className="md:col-span-2 text-sm text-slate-500 py-6">Seu histórico aparecerá aqui após os atendimentos.</div>}</div></section></div>
         </div>
 
         <div className="space-y-6">
