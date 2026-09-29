@@ -58,9 +58,9 @@ const AdminBookings: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-7 pb-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-3xl font-serif font-bold text-white">Gerenciar Agendamentos</h1>
+        <h1 className="page-title">Gerenciar Agendamentos</h1>
         <div className="flex items-center space-x-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
@@ -87,7 +87,7 @@ const AdminBookings: React.FC = () => {
         </div>
       </div>
 
-      <div className="glass rounded-3xl border border-slate-700 overflow-hidden">
+      <div className="surface overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>

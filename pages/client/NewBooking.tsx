@@ -157,6 +157,7 @@ const NewBooking: React.FC = () => {
                 <ArrowRight className="text-slate-600 group-hover:text-amber-500 transition-all group-hover:translate-x-1" />
               </button>
             ))}
+            {!services.some(s=>s.active!==false)&&<div className="col-span-full empty-state"><Scissors size={36} className="mx-auto mb-3 opacity-40"/><h3 className="font-bold text-white">Nenhum serviço disponível</h3><p className="text-sm mt-2">A barbearia ainda não liberou serviços para agendamento.</p></div>}
           </div>
         </div>
       )}
@@ -168,7 +169,7 @@ const NewBooking: React.FC = () => {
             <button onClick={() => setStep(1)} className="text-sm text-amber-500 font-medium hover:underline transition-all">Trocar serviço</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {professionals.map((p) => (
+            {professionals.filter(p=>p.active!==false).map((p) => (
               <button
                 key={p.id}
                 onClick={() => {
@@ -180,7 +181,7 @@ const NewBooking: React.FC = () => {
                 }`}
               >
                 <div className="relative inline-block mb-4">
-                  <img src={p.avatar} alt={p.name} className="w-24 h-24 rounded-full object-cover border-2 border-slate-700 group-hover:border-amber-500 transition-colors" />
+                  {p.avatar?<img src={p.avatar} alt={p.name} className="w-24 h-24 rounded-full object-cover border-2 border-slate-700 group-hover:border-amber-500 transition-colors"/>:<div className="w-24 h-24 rounded-full border-2 border-slate-700 group-hover:border-amber-500 bg-slate-900 flex items-center justify-center text-2xl font-bold text-amber-400">{p.name.charAt(0)}</div>}
                   <div className={`absolute -bottom-2 -right-2 bg-amber-500 text-slate-900 p-1.5 rounded-full shadow-lg transition-transform ${selectedProfessional?.id === p.id ? 'scale-100' : 'scale-0'}`}>
                     <CheckCircle2 size={16} />
                   </div>
@@ -190,6 +191,7 @@ const NewBooking: React.FC = () => {
                 <p className="text-[10px] text-amber-500 uppercase tracking-widest font-bold">{p.specialty}</p>
               </button>
             ))}
+            {!professionals.some(p=>p.active!==false)&&<div className="col-span-full empty-state"><User size={36} className="mx-auto mb-3 opacity-40"/><h3 className="font-bold text-white">Nenhum profissional disponível</h3><p className="text-sm mt-2">A equipe ainda não possui profissionais ativos para receber reservas.</p></div>}
           </div>
         </div>
       )}
@@ -210,7 +212,7 @@ const NewBooking: React.FC = () => {
               <input
                 type="date"
                 min={new Date().toISOString().split('T')[0]}
-                className={`w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white appearance-none transition-all ${selectedDate && isOffDay(selectedDate) ? 'border-red-500' : ''}`}
+                className={`field appearance-none ${selectedDate && isOffDay(selectedDate) ? 'border-red-500' : ''}`}
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
               />

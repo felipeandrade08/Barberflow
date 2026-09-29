@@ -14,7 +14,7 @@ const AdminServices: React.FC = () => {
     price: 0,
     duration: 30,
     description: '',
-    image: 'https://images.unsplash.com/photo-1621605815841-aa33c563721e?w=400&h=400&fit=crop',
+    image: '',
   });
 
   const handleOpenCreateModal = () => {
@@ -24,7 +24,7 @@ const AdminServices: React.FC = () => {
       price: 0,
       duration: 30,
       description: '',
-      image: 'https://images.unsplash.com/photo-1621605815841-aa33c563721e?w=400&h=400&fit=crop',
+      image: '',
     });
     setIsModalOpen(true);
   };
@@ -36,7 +36,7 @@ const AdminServices: React.FC = () => {
       price: service.price,
       duration: service.duration,
       description: service.description || '',
-      image: service.image || 'https://images.unsplash.com/photo-1621605815841-aa33c563721e?w=400&h=400&fit=crop',
+      image: service.image || '',
     });
     setIsModalOpen(true);
   };
@@ -66,15 +66,15 @@ const AdminServices: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-7 pb-10 animate-in fade-in duration-500">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-white">Serviços</h1>
+          <h1 className="page-title">Serviços</h1>
           <p className="text-slate-400">Gerencie o catálogo de serviços oferecidos</p>
         </div>
         <button
           onClick={handleOpenCreateModal}
-          className="bg-amber-500 text-slate-900 px-6 py-3 rounded-xl font-bold hover:bg-amber-400 transition-all flex items-center space-x-2 shadow-lg shadow-amber-500/10 active:scale-95"
+          className="btn-primary"
         >
           <Plus size={20} />
           <span>Novo Serviço</span>
@@ -87,11 +87,7 @@ const AdminServices: React.FC = () => {
           return (
             <div key={service.id} className="glass rounded-3xl border border-slate-700 overflow-hidden flex flex-col group">
               <div className="h-40 overflow-hidden relative">
-                <img 
-                  src={service.image} 
-                  alt={service.name} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+                {service.image?<img src={service.image} alt={service.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>:<div className="w-full h-full bg-slate-800 flex items-center justify-center"><ImageIcon size={36} className="text-slate-600"/></div>}
                 <div className="absolute top-4 right-4 flex space-x-2">
                   <button 
                     onClick={() => handleOpenEditModal(service)}
@@ -158,6 +154,7 @@ const AdminServices: React.FC = () => {
             </div>
           );
         })}
+        {!services.length&&<div className="col-span-full empty-state"><ImageIcon size={38} className="mx-auto mb-3 opacity-40"/><h3 className="text-white font-bold">Catálogo vazio</h3><p className="text-sm mt-2">Cadastre o primeiro serviço com preço e duração para liberar o fluxo de agendamento.</p><button onClick={handleOpenCreateModal} className="btn-primary mt-5 mx-auto"><Plus size={17}/>Cadastrar primeiro serviço</button></div>}
       </div>
 
       {/* Create/Edit Service Modal */}
@@ -179,9 +176,7 @@ const AdminServices: React.FC = () => {
                     src={formData.image} 
                     alt="Preview" 
                     className="w-full h-full object-cover transition-all"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=2070";
-                    }}
+                    onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none'}}
                  />
                  <div className="absolute inset-0 bg-slate-950/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <ImageIcon className="text-white" size={32} />
@@ -193,7 +188,7 @@ const AdminServices: React.FC = () => {
                 <input
                   required
                   type="text"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                  className="field"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
@@ -206,7 +201,7 @@ const AdminServices: React.FC = () => {
                     required
                     type="number"
                     step="0.01"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                    className="field"
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
                   />
@@ -216,7 +211,7 @@ const AdminServices: React.FC = () => {
                   <input
                     required
                     type="number"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                    className="field"
                     value={formData.duration}
                     onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
                   />
@@ -226,7 +221,7 @@ const AdminServices: React.FC = () => {
               <div>
                 <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Descrição</label>
                 <textarea
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white h-24 resize-none"
+                  className="field h-24 resize-none"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 />
@@ -237,7 +232,7 @@ const AdminServices: React.FC = () => {
                 <input
                   type="url"
                   placeholder="https://exemplo.com/imagem.jpg"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                  className="field"
                   value={formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                 />
