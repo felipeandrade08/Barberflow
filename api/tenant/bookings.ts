@@ -35,16 +35,20 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
       }catch(e){await client.query('ROLLBACK');throw e}finally{client.release();}
     }
     if(req.method==='PATCH'){
-      const x=req.body||{}; const allowed=['pending','confirmed','finished','cancelled'];
+      const x=req.body||{}; const allowed=['pending','confirmed','in_progress','finished','cancelled'];
       if(x.status&&!allowed.includes(x.status))return res.status(400).json({error:'Status inválido.'});
       const client=await db().connect();
       try{
         await client.query('BEGIN');
         const before=(await client.query(`SELECT b.id,b.user_id,b.date,b.time,b.status,t.cancellation_hours FROM bookings b JOIN tenants t ON t.id=b.tenant_id WHERE b.id=$1 AND b.tenant_id=$2 AND (b.user_id=$3 OR $4='admin') FOR UPDATE`,[x.id,s.tenantId,s.userId,s.role])).rows[0];
         if(!before){await client.query('ROLLBACK');return res.status(404).json({error:'Agendamento não encontrado.'});}
+        if(x.status && x.status!==before.status){
+          const transitions:Record<string,string[]>={pending:['confirmed','cancelled'],confirmed:['in_progress','cancelled'],in_progress:['finished'],finished:[],cancelled:[]};
+          if(!(transitions[before.status]||[]).includes(x.status)){await client.query('ROLLBACK');return res.status(409).json({error:`Transição inválida: ${before.status} → ${x.status}.`});}
+        }
         if(s.role!=='admin' && x.status==='cancelled' && before.status==='finished'){await client.query('ROLLBACK');return res.status(409).json({error:'Atendimento finalizado não pode ser cancelado.'});}
         if(s.role!=='admin' && x.status==='cancelled' && Number(before.cancellation_hours)>0){const start=new Date(`${String(before.date).slice(0,10)}T${String(before.time).slice(0,8)}`);if(start.getTime()-Date.now()<Number(before.cancellation_hours)*3600000){await client.query('ROLLBACK');return res.status(409).json({error:`Cancelamento permitido até ${before.cancellation_hours}h antes do horário.`});}}
-        if(s.role!=='admin' && x.status && x.status!=='cancelled') {await client.query('ROLLBACK');return res.status(403).json({error:'Cliente só pode cancelar o próprio agendamento.'});}
+        if(s.role!=='admin' && x.status && x.status!==before.status && x.status!=='cancelled') {await client.query('ROLLBACK');return res.status(403).json({error:'Cliente só pode cancelar o próprio agendamento.'});}
         if(s.role!=='admin' && (x.paymentMethod!==undefined || x.observation!==undefined)) {await client.query('ROLLBACK');return res.status(403).json({error:'Alteração restrita ao administrador.'});}
         if(x.ratingStars!==undefined && (!Number.isInteger(x.ratingStars)||x.ratingStars<1||x.ratingStars>5)){await client.query('ROLLBACK');return res.status(400).json({error:'Avaliação deve ter entre 1 e 5 estrelas.'});}
         if(s.role!=='admin' && x.ratingStars!==undefined && before.status!=='finished'){await client.query('ROLLBACK');return res.status(409).json({error:'Só é possível avaliar um atendimento finalizado.'});}
