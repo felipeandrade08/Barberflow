@@ -175,9 +175,7 @@ const AdminServices: React.FC = () => {
                     src={formData.image} 
                     alt="Preview" 
                     className="w-full h-full object-cover transition-all"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1503951914875-452162b0f3f1?q=80&w=2070";
-                    }}
+                    onError={(e)=>{(e.currentTarget as HTMLImageElement).style.display='none'}}
                  />
                  <div className="absolute inset-0 bg-slate-950/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                     <ImageIcon className="text-white" size={32} />
