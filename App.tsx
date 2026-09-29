@@ -16,6 +16,7 @@ import MasterDashboard from './pages/master/Dashboard';
 import ClientDashboard from './pages/client/Dashboard';
 import NewBooking from './pages/client/NewBooking';
 import Toast from './components/Toast';
+import Support from './pages/Support';
 
 const MainLayout:React.FC=()=>{
  const {currentUser,toasts,removeToast}=useApp();
@@ -33,8 +34,9 @@ const MainLayout:React.FC=()=>{
 
  if(currentUser.role==='platform_admin') return <MasterDashboard/>;
  const render=()=>currentUser.role==='admin'
- ? ({dashboard:<AdminDashboard/>,bookings:<AdminBookings/>,services:<AdminServices/>,professionals:<AdminProfessionals/>,clients:<AdminClients/>,reviews:<AdminReviews/>,billing:<AdminBilling/>,settings:<AdminSettings/>, 'new-booking':<NewBooking/>} as any)[activeTab]||<AdminDashboard/>
- : ({dashboard:<ClientDashboard/>, 'new-booking':<NewBooking/>} as any)[activeTab]||<ClientDashboard/>;
+ ? ({dashboard:<AdminDashboard/>,bookings:<AdminBookings/>,services:<AdminServices/>,professionals:<AdminProfessionals/>,clients:<AdminClients/>,reviews:<AdminReviews/>,billing:<AdminBilling/>,settings:<AdminSettings/>, 'new-booking':<NewBooking/>,support:<Support/>} as any)[activeTab]||<AdminDashboard/>
+ : currentUser.role==='barber' ? ({dashboard:<AdminBookings/>,support:<Support/>} as any)[activeTab]||<AdminBookings/>
+ : ({dashboard:<ClientDashboard/>, 'new-booking':<NewBooking/>,support:<Support/>} as any)[activeTab]||<ClientDashboard/>;
 
  return <div className="flex h-screen overflow-hidden">
    <Sidebar activeTab={activeTab} onTabChange={setActiveTab}/>

@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS tenants (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), slug varchar(80) UNIQUE NOT NULL, name varchar(160) NOT NULL,
-  phone varchar(40), whatsapp varchar(40), email varchar(180), address text, description text, instagram varchar(120), logo_url text,
+  phone varchar(40), whatsapp varchar(40), email varchar(180), address text, description text, instagram varchar(120), logo_url text, cover_url text,
   open_time time NOT NULL DEFAULT '09:00', close_time time NOT NULL DEFAULT '19:00', booking_interval int NOT NULL DEFAULT 30 CHECK (booking_interval BETWEEN 5 AND 240),
   cancellation_hours int NOT NULL DEFAULT 2, off_days text[] NOT NULL DEFAULT '{}', theme varchar(20) NOT NULL DEFAULT 'dark',
   qr_color varchar(20) DEFAULT '#0f172a', qr_content text, subscription_status varchar(40) NOT NULL DEFAULT 'trialing',
@@ -14,15 +14,16 @@ CREATE TABLE IF NOT EXISTS tenants (
 CREATE TABLE IF NOT EXISTS users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   name varchar(160) NOT NULL, email varchar(180) NOT NULL, phone varchar(40), password_hash text NOT NULL,
-  role varchar(30) NOT NULL CHECK (role IN ('admin','client','platform_admin')), loyalty_points int NOT NULL DEFAULT 0 CHECK (loyalty_points >= 0),
+  role varchar(30) NOT NULL CHECK (role IN ('admin','barber','client','platform_admin')), loyalty_points int NOT NULL DEFAULT 0 CHECK (loyalty_points >= 0),
   created_at timestamptz NOT NULL DEFAULT now(), last_visit date, UNIQUE(tenant_id,email)
 );
 CREATE INDEX IF NOT EXISTS users_email_idx ON users(lower(email));
 CREATE TABLE IF NOT EXISTS professionals (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   name varchar(160) NOT NULL, role varchar(100) DEFAULT 'Barbeiro', avatar text, specialty varchar(160), active boolean NOT NULL DEFAULT true,
-  created_at timestamptz NOT NULL DEFAULT now()
+  created_at timestamptz NOT NULL DEFAULT now(), user_id uuid REFERENCES users(id) ON DELETE SET NULL
 );
+CREATE UNIQUE INDEX IF NOT EXISTS professionals_user_idx ON professionals(user_id) WHERE user_id IS NOT NULL;
 CREATE TABLE IF NOT EXISTS professional_working_hours (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   professional_id uuid NOT NULL REFERENCES professionals(id) ON DELETE CASCADE, weekday smallint NOT NULL CHECK (weekday BETWEEN 0 AND 6),
@@ -40,7 +41,8 @@ CREATE INDEX IF NOT EXISTS professional_time_off_lookup_idx ON professional_time
 
 CREATE TABLE IF NOT EXISTS services (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  name varchar(160) NOT NULL, price numeric(10,2) NOT NULL CHECK (price >= 0), duration int NOT NULL DEFAULT 30 CHECK (duration BETWEEN 5 AND 1440), description text, image text,
+  name varchar(160) NOT NULL, price numeric(10,2) NOT NULL CHECK (price >= 0), duration int NOT NULL DEFAULT 30 CHECK (duration BETWEEN 5 AND 1440), description text,
+  category varchar(80) NOT NULL DEFAULT 'Outros', is_combo boolean NOT NULL DEFAULT false, combo_items text[] NOT NULL DEFAULT '{}',
   active boolean NOT NULL DEFAULT true, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE TABLE IF NOT EXISTS bookings (
@@ -56,3 +58,7 @@ CREATE INDEX IF NOT EXISTS bookings_user_idx ON bookings(tenant_id,user_id,date)
 CREATE INDEX IF NOT EXISTS bookings_active_schedule_idx ON bookings(tenant_id,professional_id,date,time) WHERE status IN ('pending','confirmed','in_progress');
 
 -- A conta master é criada pelo endpoint /api/master/bootstrap usando MASTER_BOOTSTRAP_SECRET.
+
+CREATE TABLE IF NOT EXISTS platform_settings (
+  id smallint PRIMARY KEY DEFAULT 1 CHECK (id = 1), support_email varchar(180), support_whatsapp varchar(40), support_message text, updated_at timestamptz NOT NULL DEFAULT now()
+);

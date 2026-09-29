@@ -5,12 +5,12 @@ const days=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
 const defaults=()=>days.map((_,weekday)=>({weekday,startTime:'09:00',endTime:'19:00',breakStart:'12:00',breakEnd:'13:00',active:weekday!==0}));
 const AdminProfessionals:React.FC=()=>{
  const {professionals,addProfessional,updateProfessional,saveProfessionalSchedule,addProfessionalTimeOff,removeProfessionalTimeOff}=useApp();
- const [form,setForm]=useState({name:'',role:'Barbeiro',specialty:'',avatar:''});const [selectedId,setSelectedId]=useState<string|null>(null);
+ const [form,setForm]=useState({name:'',role:'Barbeiro',specialty:'',avatar:'',createAccess:false,email:'',phone:'',password:''});const [selectedId,setSelectedId]=useState<string|null>(null);
  const selected=professionals.find(p=>p.id===selectedId)||null;
  const initial=useMemo(()=>{const base=defaults();for(const h of selected?.workingHours||[])base[h.weekday]={...base[h.weekday],...h};return base},[selectedId,selected?.workingHours]);
  const [hours,setHours]=useState<any[]>(initial);const [block,setBlock]=useState({date:'',startTime:'09:00',endTime:'19:00',reason:''});
  React.useEffect(()=>setHours(initial),[initial]);
- const create=async(e:React.FormEvent)=>{e.preventDefault();if(await addProfessional(form))setForm({name:'',role:'Barbeiro',specialty:'',avatar:''})};
+ const create=async(e:React.FormEvent)=>{e.preventDefault();if(await addProfessional(form))setForm({name:'',role:'Barbeiro',specialty:'',avatar:'',createAccess:false,email:'',phone:'',password:''})};
  const addBlock=async()=>{if(!selected||!block.date)return;if(await addProfessionalTimeOff({professionalId:selected.id,...block}))setBlock({date:'',startTime:'09:00',endTime:'19:00',reason:''})};
  return <div className="space-y-7"><div><h1 className="page-title">Equipe</h1><p className="page-subtitle">Profissionais, jornadas, intervalos e indisponibilidades.</p></div>
  <div className="grid xl:grid-cols-[1fr_1.6fr] gap-6"><div className="space-y-5">
@@ -19,6 +19,8 @@ const AdminProfessionals:React.FC=()=>{
    <input placeholder="Função" value={form.role} onChange={e=>setForm({...form,role:e.target.value})} className="field"/>
    <input placeholder="Especialidade" value={form.specialty} onChange={e=>setForm({...form,specialty:e.target.value})} className="field"/>
    <input placeholder="URL da foto (opcional)" value={form.avatar} onChange={e=>setForm({...form,avatar:e.target.value})} className="field"/>
+   <label className="flex items-center gap-3 text-sm text-slate-300"><input type="checkbox" checked={form.createAccess} onChange={e=>setForm({...form,createAccess:e.target.checked})}/>Criar acesso ao painel para este barbeiro</label>
+   {form.createAccess&&<div className="space-y-2 p-4 rounded-2xl bg-slate-900 border border-slate-700"><input required type="email" placeholder="E-mail de acesso" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} className="field"/><input placeholder="Telefone (opcional)" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} className="field"/><input required minLength={8} type="password" placeholder="Senha inicial (8+)" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} className="field"/><p className="text-[11px] text-slate-500">O barbeiro verá somente a própria agenda vinculada a este perfil.</p></div>}
    <button className="w-full bg-amber-500 text-slate-950 rounded-xl py-3 font-bold">Adicionar profissional</button>
   </form>
   <div className="space-y-3">{professionals.map(p=><button key={p.id} onClick={()=>setSelectedId(p.id)} className={`w-full text-left p-4 rounded-2xl border ${selectedId===p.id?'border-amber-500 bg-amber-500/10':'border-slate-700 bg-slate-900/60'}`}><div className="flex items-center justify-between"><div className="flex gap-3 items-center"><div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center"><UserRound size={19}/></div><div><div className="font-bold text-white">{p.name}</div><div className="text-xs text-slate-500">{p.role}{p.specialty?` · ${p.specialty}`:''}</div></div></div><span className={`text-xs font-bold ${p.active!==false?'text-emerald-400':'text-slate-500'}`}>{p.active!==false?'ATIVO':'INATIVO'}</span></div></button>)}{!professionals.length&&<div className="empty-state"><UserRound size={34} className="mx-auto mb-3 opacity-40"/><h3 className="text-white font-bold">Equipe vazia</h3><p className="text-xs mt-2">Cadastre o primeiro profissional para configurar sua jornada e liberar horários.</p></div>}</div>

@@ -1,6 +1,7 @@
 import type {VercelRequest,VercelResponse} from '@vercel/node';
 import {db} from '../_lib/db';
 import {requireRole} from '../_lib/authorization';
+import {hashPassword} from '../_lib/auth';
 const validTime=(v:any)=>/^\d{2}:\d{2}$/.test(String(v||''));
 export default async function handler(req:VercelRequest,res:VercelResponse){
  const s=await requireRole(req,res,['admin']);if(!s)return;
@@ -8,8 +9,10 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
   const x=req.body||{};
   if(req.method==='POST'){
    if(!x.name?.trim())return res.status(400).json({error:'Nome do profissional é obrigatório.'});
-   const r=await db().query(`INSERT INTO professionals(tenant_id,name,role,avatar,specialty,active) VALUES($1,$2,$3,$4,$5,true) RETURNING id,name,role,avatar,specialty,active`,[s.tenantId,x.name.trim(),x.role?.trim()||'Barbeiro',x.avatar?.trim()||null,x.specialty?.trim()||null]);
-   return res.status(201).json(r.rows[0]);
+   const c=await db().connect();try{await c.query('BEGIN');let userId=null;
+    if(x.createAccess===true){if(!x.email?.trim()||!x.password||String(x.password).length<8){await c.query('ROLLBACK');return res.status(400).json({error:'Para criar acesso, informe e-mail e senha com pelo menos 8 caracteres.'});}const u=(await c.query(`INSERT INTO users(tenant_id,name,email,phone,password_hash,role) VALUES($1,$2,$3,$4,$5,'barber') RETURNING id`,[s.tenantId,x.name.trim(),x.email.trim().toLowerCase(),x.phone||null,hashPassword(String(x.password))])).rows[0];userId=u.id;}
+    const r=await c.query(`INSERT INTO professionals(tenant_id,name,role,avatar,specialty,active,user_id) VALUES($1,$2,$3,$4,$5,true,$6) RETURNING id,name,role,avatar,specialty,active,user_id "userId"`,[s.tenantId,x.name.trim(),x.role?.trim()||'Barbeiro',x.avatar?.trim()||null,x.specialty?.trim()||null,userId]);await c.query('COMMIT');return res.status(201).json(r.rows[0]);
+   }catch(e:any){await c.query('ROLLBACK');if(e?.code==='23505')return res.status(409).json({error:'Este e-mail já possui acesso nesta barbearia.'});throw e}finally{c.release()}
   }
   if(req.method==='PUT'){
    if(!x.id)return res.status(400).json({error:'Profissional obrigatório.'});
