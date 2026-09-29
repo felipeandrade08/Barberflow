@@ -1,10 +1,10 @@
 import React from 'react';
-import { ArrowRight, CalendarDays, CheckCircle2, Clock3, MapPin, Phone, Scissors, Star, Instagram, MessageCircle } from 'lucide-react';
+import { ArrowRight, CalendarDays, CheckCircle2, Clock3, MapPin, Phone, Scissors, Instagram, MessageCircle } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import Logo from '../components/Logo';
 
-const PublicHome:React.FC<{onLogin:()=>void}> = ({onLogin}) => {
-  const {settings,services,professionals,tenantSlug}=useApp();
+const PublicHome:React.FC<{onLogin:()=>void;onBook:()=>void}> = ({onLogin,onBook}) => {
+  const {settings,services}=useApp();
   const active=services.filter(s=>s.active!==false);
   const whatsapp=`https://wa.me/${settings.whatsapp.replace(/\D/g,'')}`;
   return <div className="min-h-screen bg-slate-950 text-white">
@@ -13,7 +13,7 @@ const PublicHome:React.FC<{onLogin:()=>void}> = ({onLogin}) => {
         <div className="flex items-center gap-3"><Logo size={38}/><div><div className="font-serif text-xl font-bold gradient-text">{settings.name}</div><div className="text-[9px] tracking-[.25em] uppercase text-slate-500">Agendamento online</div></div></div>
         <div className="flex items-center gap-3">
           <button onClick={onLogin} className="hidden sm:block px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-300 hover:text-white">Entrar</button>
-          <a href={`#booking`} onClick={(e)=>{e.preventDefault();onLogin();}} className="px-5 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm hover:bg-amber-400 transition">Agendar horário</a>
+          <button onClick={onBook} className="px-5 py-2.5 rounded-xl bg-amber-500 text-slate-950 font-bold text-sm hover:bg-amber-400 transition">Agendar horário</button>
         </div>
       </div>
     </header>
@@ -27,7 +27,7 @@ const PublicHome:React.FC<{onLogin:()=>void}> = ({onLogin}) => {
             <h1 className="text-5xl lg:text-7xl font-serif font-bold leading-[.98]">Seu estilo.<br/><span className="gradient-text">Seu horário.</span></h1>
             <p className="mt-6 text-lg text-slate-300 max-w-xl leading-relaxed">{settings.description}</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <button onClick={onLogin} className="px-6 py-4 rounded-2xl bg-amber-500 text-slate-950 font-extrabold flex items-center gap-2 hover:bg-amber-400 transition shadow-xl shadow-amber-500/10">Agendar agora <ArrowRight size={19}/></button>
+              <button onClick={onBook} className="px-6 py-4 rounded-2xl bg-amber-500 text-slate-950 font-extrabold flex items-center gap-2 hover:bg-amber-400 transition shadow-xl shadow-amber-500/10">Agendar agora <ArrowRight size={19}/></button>
               <a href={whatsapp} target="_blank" rel="noreferrer" className="px-6 py-4 rounded-2xl border border-white/10 bg-white/5 font-bold flex items-center gap-2 hover:bg-white/10 transition"><MessageCircle size={19}/> WhatsApp</a>
             </div>
             <div className="mt-10 flex flex-wrap gap-6 text-sm text-slate-400">
