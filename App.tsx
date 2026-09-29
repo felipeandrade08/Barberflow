@@ -17,6 +17,7 @@ import ClientDashboard from './pages/client/Dashboard';
 import NewBooking from './pages/client/NewBooking';
 import Toast from './components/Toast';
 import Support from './pages/Support';
+import BarberAvailability from './pages/barber/Availability';
 
 const MainLayout:React.FC=()=>{
  const {currentUser,toasts,removeToast}=useApp();
@@ -35,7 +36,7 @@ const MainLayout:React.FC=()=>{
  if(currentUser.role==='platform_admin') return <MasterDashboard/>;
  const render=()=>currentUser.role==='admin'
  ? ({dashboard:<AdminDashboard/>,bookings:<AdminBookings/>,services:<AdminServices/>,professionals:<AdminProfessionals/>,clients:<AdminClients/>,reviews:<AdminReviews/>,billing:<AdminBilling/>,settings:<AdminSettings/>, 'new-booking':<NewBooking/>,support:<Support/>} as any)[activeTab]||<AdminDashboard/>
- : currentUser.role==='barber' ? ({dashboard:<AdminBookings/>,support:<Support/>} as any)[activeTab]||<AdminBookings/>
+ : currentUser.role==='barber' ? ({dashboard:<AdminBookings/>,availability:<BarberAvailability/>,support:<Support/>} as any)[activeTab]||<AdminBookings/>
  : ({dashboard:<ClientDashboard/>, 'new-booking':<NewBooking/>,support:<Support/>} as any)[activeTab]||<ClientDashboard/>;
 
  return <div className="flex h-screen overflow-hidden">

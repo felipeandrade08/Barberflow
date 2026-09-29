@@ -62,3 +62,5 @@ CREATE INDEX IF NOT EXISTS bookings_active_schedule_idx ON bookings(tenant_id,pr
 CREATE TABLE IF NOT EXISTS platform_settings (
   id smallint PRIMARY KEY DEFAULT 1 CHECK (id = 1), support_email varchar(180), support_whatsapp varchar(40), support_message text, updated_at timestamptz NOT NULL DEFAULT now()
 );
+
+INSERT INTO platform_settings(id,support_message) VALUES(1,'Precisa de ajuda com o BarberFlow? Fale com o suporte da plataforma.') ON CONFLICT (id) DO NOTHING;
