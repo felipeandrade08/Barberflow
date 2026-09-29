@@ -14,6 +14,10 @@ BEGIN
  ALTER TABLE services ADD CONSTRAINT services_duration_positive CHECK (duration BETWEEN 5 AND 1440);
  ALTER TABLE bookings DROP CONSTRAINT IF EXISTS bookings_rating_range;
  ALTER TABLE bookings ADD CONSTRAINT bookings_rating_range CHECK (rating_stars IS NULL OR rating_stars BETWEEN 1 AND 5);
+ ALTER TABLE bookings DROP CONSTRAINT IF EXISTS bookings_payment_method_valid;
+ ALTER TABLE bookings ADD CONSTRAINT bookings_payment_method_valid CHECK (payment_method IS NULL OR payment_method IN ('money','pix','debit','credit'));
+ ALTER TABLE users DROP CONSTRAINT IF EXISTS users_loyalty_points_nonnegative;
+ ALTER TABLE users ADD CONSTRAINT users_loyalty_points_nonnegative CHECK (loyalty_points >= 0);
  ALTER TABLE tenants DROP CONSTRAINT IF EXISTS tenants_booking_interval_range;
  ALTER TABLE tenants ADD CONSTRAINT tenants_booking_interval_range CHECK (booking_interval BETWEEN 5 AND 240);
 END $$;
