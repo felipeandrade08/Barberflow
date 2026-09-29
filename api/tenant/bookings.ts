@@ -40,7 +40,7 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
       const client=await db().connect();
       try{
         await client.query('BEGIN');
-        const before=(await client.query(`SELECT b.id,b.user_id,b.date,b.time,b.status,t.cancellation_hours FROM bookings b JOIN tenants t ON t.id=b.tenant_id WHERE b.id=$1 AND tenant_id=$2 AND (user_id=$3 OR $4='admin') FOR UPDATE`,[x.id,s.tenantId,s.userId,s.role])).rows[0];
+        const before=(await client.query(`SELECT b.id,b.user_id,b.date,b.time,b.status,t.cancellation_hours FROM bookings b JOIN tenants t ON t.id=b.tenant_id WHERE b.id=$1 AND b.tenant_id=$2 AND (b.user_id=$3 OR $4='admin') FOR UPDATE`,[x.id,s.tenantId,s.userId,s.role])).rows[0];
         if(!before){await client.query('ROLLBACK');return res.status(404).json({error:'Agendamento não encontrado.'});}
         if(s.role!=='admin' && x.status==='cancelled' && before.status==='finished'){await client.query('ROLLBACK');return res.status(409).json({error:'Atendimento finalizado não pode ser cancelado.'});}
         if(s.role!=='admin' && x.status==='cancelled' && Number(before.cancellation_hours)>0){const start=new Date(`${String(before.date).slice(0,10)}T${String(before.time).slice(0,8)}`);if(start.getTime()-Date.now()<Number(before.cancellation_hours)*3600000){await client.query('ROLLBACK');return res.status(409).json({error:`Cancelamento permitido até ${before.cancellation_hours}h antes do horário.`});}}
