@@ -51,7 +51,7 @@ const ClientDashboard: React.FC = () => {
     window.location.hash = '#new-booking';
   };
 
-  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.address)}`;
+  const googleMapsUrl = settings.address ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.address)}` : '';
 
   return (
     <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
@@ -62,10 +62,7 @@ const ClientDashboard: React.FC = () => {
         </div>
 
         <div className="flex space-x-3">
-          <a href={`tel:${settings.phone}`} className="glass p-3 rounded-2xl border border-slate-700 hover:border-amber-500/50 transition-all flex items-center space-x-2 text-slate-300 hover:text-amber-500 group">
-             <Phone size={18} className="group-hover:scale-110 transition-transform" />
-             <span className="text-sm font-bold">Ligar agora</span>
-          </a>
+          {settings.phone&&<a href={`tel:${settings.phone}`} className="glass p-3 rounded-2xl border border-slate-700 hover:border-amber-500/50 transition-all flex items-center space-x-2 text-slate-300 hover:text-amber-500 group"><Phone size={18}/><span className="text-sm font-bold">Ligar agora</span></a>}
         </div>
       </div>
 
@@ -194,7 +191,7 @@ const ClientDashboard: React.FC = () => {
               <div className="col-span-full py-16 text-center glass rounded-3xl border border-slate-700">
                 <AlertCircle size={48} className="mx-auto text-slate-600 mb-4" />
                 <h3 className="text-xl font-bold text-white">Nenhum agendamento</h3>
-                <p className="text-slate-400 max-w-xs mx-auto mt-2">Você ainda não possui agendamentos. Comece reservando um horário agora mesmo!</p>
+                <p className="text-slate-400 max-w-xs mx-auto mt-2">Você ainda não possui agendamentos.</p><button onClick={()=>window.location.hash='#new-booking'} className="btn-primary mt-5 mx-auto"><Calendar size={17}/>Agendar meu primeiro horário</button>
               </div>
             )}
           </div>
@@ -214,10 +211,10 @@ const ClientDashboard: React.FC = () => {
             <div className="p-8 space-y-6">
               <div>
                 <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-2">Nosso Endereço</p>
-                <p className="text-white font-medium text-lg leading-snug">{settings.address}</p>
+                <p className="text-white font-medium text-lg leading-snug">{settings.address||'Endereço ainda não informado.'}</p>
               </div>
 
-              <div className="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50">
+              {settings.phone&&<div className="flex items-center space-x-4 p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50">
                 <div className="p-2 bg-amber-500/20 text-amber-500 rounded-lg">
                   <Phone size={20} />
                 </div>
@@ -225,16 +222,15 @@ const ClientDashboard: React.FC = () => {
                   <p className="text-[10px] text-slate-500 uppercase tracking-tighter font-bold">Fale Conosco</p>
                   <p className="text-white font-bold">{settings.phone}</p>
                 </div>
-              </div>
-
-              <a 
+              </div>}
+              {googleMapsUrl&&<a 
                 href={googleMapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full flex items-center justify-center space-x-2 py-3 bg-slate-700 hover:bg-slate-600 rounded-xl text-white font-bold transition-all"
               >
                 <span>Ver no Google Maps</span>
-              </a>
+              </a>}
             </div>
           </div>
         </div>
