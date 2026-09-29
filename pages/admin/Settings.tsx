@@ -190,34 +190,6 @@ const AdminSettings: React.FC = () => {
         </div>
 
         <div className="space-y-8">
-          {/* Business Hours */}
-          <div className="surface p-6 lg:p-8 space-y-6">
-            <h2 className="text-xl font-bold text-white flex items-center">
-              <Clock className="mr-2 text-blue-500" size={20} />
-              Horário
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Abertura</label>
-                <input
-                  type="time"
-                  className="field"
-                  value={formData.openTime}
-                  onChange={(e) => setFormData({ ...formData, openTime: e.target.value })}
-                />
-              </div>
-              <div>
-                <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Fechamento</label>
-                <input
-                  type="time"
-                  className="field"
-                  value={formData.closeTime}
-                  onChange={(e) => setFormData({ ...formData, closeTime: e.target.value })}
-                />
-              </div>
-            </div>
-          </div>
-
           {/* Off Days */}
           <div className="surface p-6 lg:p-8 space-y-6">
             <h2 className="text-xl font-bold text-white flex items-center">
