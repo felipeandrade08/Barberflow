@@ -2,6 +2,7 @@ import React,{useEffect,useState} from 'react';
 import {AppProvider,useApp} from './context/AppContext';
 import Login from './pages/Login';
 import PublicHome from './pages/PublicHome';
+import SaaSHome from './pages/SaaSHome';
 import Sidebar from './components/Sidebar';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminBookings from './pages/admin/Bookings';
@@ -19,12 +20,15 @@ import Toast from './components/Toast';
 const MainLayout:React.FC=()=>{
  const {currentUser,toasts,removeToast}=useApp();
  const [activeTab,setActiveTab]=useState(()=>window.location.hash.replace('#','')||'dashboard');
- const [publicMode,setPublicMode]=useState(()=>window.location.pathname!=='/master'&&(window.location.hash==='#public'||window.location.hash===''));
+ const tenantSite=window.location.pathname.startsWith('/b/');
+ const rootSite=window.location.pathname==='/' && !window.location.hash;
+ const [publicMode,setPublicMode]=useState(()=>tenantSite&&(window.location.hash==='#public'||window.location.hash===''));
  const [loginMode,setLoginMode]=useState(()=>window.location.hash==='#login');
 
  useEffect(()=>{const h=()=>{const hash=window.location.hash.replace('#','');if(window.location.pathname==='/master'){setPublicMode(false);setLoginMode(!currentUser);return;} if(hash==='public'||!hash){setPublicMode(true);setLoginMode(false);}else if(hash==='login'){setPublicMode(false);setLoginMode(true);}else{setPublicMode(false);setLoginMode(false);setActiveTab(hash);}};window.addEventListener('hashchange',h);return()=>window.removeEventListener('hashchange',h)},[]);
 
- if(publicMode) return <PublicHome onLogin={()=>{window.location.hash='login'}}/>;
+ if(rootSite) return <SaaSHome/>;
+ if(publicMode) return <PublicHome onLogin={()=>{window.location.hash='login'}} onBook={()=>{window.location.hash=currentUser?'new-booking':'login'}}/>;
  if(!currentUser||loginMode) return <Login onBack={()=>{window.location.hash='public'}}/>;
 
  if(currentUser.role==='platform_admin') return <MasterDashboard/>;
