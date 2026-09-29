@@ -26,13 +26,20 @@ export function signToken(payload: Record<string, unknown>, expiresIn = 60 * 60 
 }
 export function readToken(token?: string) {
   if (!token) return null;
-  const [body, sig] = token.split('.');
-  if (!body || !sig) return null;
-  const expected = b64(crypto.createHmac('sha256', secret()).update(body).digest());
-  if (sig.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
-  const data = JSON.parse(unb64(body));
-  if (data.exp < Math.floor(Date.now() / 1000)) return null;
-  return data;
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 2) return null;
+    const [body, sig] = parts;
+    if (!body || !sig) return null;
+    const expected = b64(crypto.createHmac('sha256', secret()).update(body).digest());
+    if (sig.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
+    const data = JSON.parse(unb64(body));
+    if (!data || typeof data !== 'object' || typeof data.exp !== 'number' || data.exp < Math.floor(Date.now() / 1000)) return null;
+    if (typeof data.userId !== 'string' || typeof data.tenantId !== 'string' || typeof data.role !== 'string') return null;
+    return data;
+  } catch {
+    return null;
+  }
 }
 export function setSession(res: VercelResponse, token: string) {
   res.setHeader('Set-Cookie', `bf_session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`);
