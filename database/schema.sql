@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS tenants (
 CREATE TABLE IF NOT EXISTS users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   name varchar(160) NOT NULL, email varchar(180) NOT NULL, phone varchar(40), password_hash text NOT NULL,
-  role varchar(30) NOT NULL CHECK (role IN ('admin','client','platform_admin')), loyalty_points int NOT NULL DEFAULT 0,
+  role varchar(30) NOT NULL CHECK (role IN ('admin','client','platform_admin')), loyalty_points int NOT NULL DEFAULT 0 CHECK (loyalty_points >= 0),
   created_at timestamptz NOT NULL DEFAULT now(), last_visit date, UNIQUE(tenant_id,email)
 );
 CREATE INDEX IF NOT EXISTS users_email_idx ON users(lower(email));
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS bookings (
   user_id uuid NOT NULL REFERENCES users(id), professional_id uuid NOT NULL REFERENCES professionals(id), service_id uuid NOT NULL REFERENCES services(id),
   service_price numeric(10,2) NOT NULL, duration int NOT NULL, date date NOT NULL, time time NOT NULL,
   status varchar(30) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','confirmed','in_progress','finished','cancelled')),
-  payment_method varchar(30), observation text, rating_stars int CHECK (rating_stars IS NULL OR rating_stars BETWEEN 1 AND 5), rating_comment text, rating_date timestamptz,
+  payment_method varchar(30) CHECK (payment_method IS NULL OR payment_method IN ('money','pix','debit','credit')), observation text, rating_stars int CHECK (rating_stars IS NULL OR rating_stars BETWEEN 1 AND 5), rating_comment text, rating_date timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS bookings_schedule_idx ON bookings(tenant_id,professional_id,date,time);
