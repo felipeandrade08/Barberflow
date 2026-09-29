@@ -78,9 +78,9 @@ const NewBooking: React.FC = () => {
           <CheckCircle2 size={64} />
         </div>
         <div>
-          <h2 className="text-3xl font-serif font-bold text-white">{isAdmin ? 'Agendamento Realizado!' : 'Seu Agendamento está Confirmado!'}</h2>
+          <h2 className="text-3xl font-serif font-bold text-white">{isAdmin ? 'Agendamento Realizado!' : 'Solicitação de Agendamento Enviada!'}</h2>
           <p className="text-slate-400 max-w-md mx-auto mt-2">
-            O horário para <span className="text-white font-bold">{resolvedClient?.name}</span> com <span className="text-white font-bold">{selectedProfessional?.name}</span> foi reservado.
+            O horário para <span className="text-white font-bold">{resolvedClient?.name}</span> com <span className="text-white font-bold">{selectedProfessional?.name}</span> foi solicitado e aguarda confirmação da barbearia.
           </p>
         </div>
         <button 
