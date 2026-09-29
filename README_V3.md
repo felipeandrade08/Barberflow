@@ -22,7 +22,7 @@ Arquitetura preparada para **Vercel + Neon PostgreSQL + Mercado Pago**. Cada bar
 
 ## Operação comercial
 - Você cria cada barbearia pelo Painel Master.
-- Cada cliente recebe uma URL normal: `https://seu-dominio.com/b/barbearia-demo`.
+- Cada cliente recebe uma URL normal: `https://seu-dominio.com/b/sua-barbearia`.
 - O responsável da barbearia entra, administra agenda/serviços/clientes e assina mensalmente pelo Mercado Pago.
 - Os dados de cada tenant são filtrados por `tenant_id` no backend.
 
