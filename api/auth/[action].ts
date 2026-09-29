@@ -1,0 +1,1 @@
+import type {VercelRequest,VercelResponse} from '@vercel/node';import {authRoute} from '../_lib/authRoutes';export default async function handler(req:VercelRequest,res:VercelResponse){const action=Array.isArray(req.query.action)?req.query.action[0]:String(req.query.action||'');return authRoute(req,res,action);}
