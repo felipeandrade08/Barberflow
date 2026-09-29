@@ -39,7 +39,7 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
      if(!Number.isInteger(weekday)||weekday<0||weekday>6||seen.has(weekday)){await c.query('ROLLBACK');return res.status(400).json({error:'Jornada semanal inválida.'});}
      seen.add(weekday);
      if(h.active!==false&&(!validTime(h.startTime)||!validTime(h.endTime)||h.startTime>=h.endTime)){await c.query('ROLLBACK');return res.status(400).json({error:'Horário de trabalho inválido.'});}
-     if((h.breakStart||h.breakEnd)&&(!validTime(h.breakStart)||!validTime(h.breakEnd)||h.breakStart>=h.breakEnd||h.breakStart<h.startTime||h.breakEnd>h.endTime)){await c.query('ROLLBACK');return res.status(400).json({error:'Intervalo do profissional inválido.'});}
+     if(h.active!==false&&(h.breakStart||h.breakEnd)&&(!validTime(h.breakStart)||!validTime(h.breakEnd)||h.breakStart>=h.breakEnd||h.breakStart<h.startTime||h.breakEnd>h.endTime)){await c.query('ROLLBACK');return res.status(400).json({error:'Intervalo do profissional inválido.'});}
     }
     await c.query('DELETE FROM professional_working_hours WHERE tenant_id=$1 AND professional_id=$2',[s.tenantId,x.id]);
     for(const h of x.workingHours)await c.query(`INSERT INTO professional_working_hours(tenant_id,professional_id,weekday,start_time,end_time,break_start,break_end,active) VALUES($1,$2,$3,$4,$5,$6,$7,$8)`,[s.tenantId,x.id,h.weekday,h.startTime||'00:00',h.endTime||'00:01',h.breakStart||null,h.breakEnd||null,h.active!==false]);
