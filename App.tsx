@@ -21,7 +21,7 @@ const MainLayout:React.FC=()=>{
  const {currentUser,toasts,removeToast}=useApp();
  const [activeTab,setActiveTab]=useState(()=>window.location.hash.replace('#','')||'dashboard');
  const tenantSite=window.location.pathname.startsWith('/b/');
- const rootSite=window.location.pathname==='/' && !window.location.hash;
+ const rootSite=window.location.pathname==='/';
  const [publicMode,setPublicMode]=useState(()=>tenantSite&&(window.location.hash==='#public'||window.location.hash===''));
  const [loginMode,setLoginMode]=useState(()=>window.location.hash==='#login');
 
