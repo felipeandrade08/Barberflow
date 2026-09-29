@@ -106,7 +106,7 @@ const NewBooking: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-3xl font-serif font-bold text-white">
+        <h1 className="text-3xl font-bold tracking-tight text-white">
           {isAdmin ? `Agendando para: ${resolvedClient?.name}` : 'Novo agendamento'}
         </h1>
         {isAdmin && (
@@ -131,7 +131,7 @@ const NewBooking: React.FC = () => {
 
       {step === 1 && (
         <div className="space-y-6">
-          <h2 className="text-2xl font-serif font-bold text-white">Escolha o serviço</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-white">Escolha o serviço</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {services.filter(s => s.active !== false).map((s) => (
               <button
@@ -165,7 +165,7 @@ const NewBooking: React.FC = () => {
       {step === 2 && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-serif font-bold text-white">Escolha o profissional</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-white">Escolha o profissional</h2>
             <button onClick={() => setStep(1)} className="text-sm text-amber-500 font-medium hover:underline transition-all">Trocar serviço</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -199,7 +199,7 @@ const NewBooking: React.FC = () => {
       {step === 3 && (
         <div className="space-y-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-serif font-bold text-white">Data e horário</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-white">Data e horário</h2>
             <div className="flex space-x-3">
                <button onClick={() => setStep(1)} className="text-xs text-slate-400 hover:text-white transition-colors">Trocar serviço</button>
                <button onClick={() => setStep(2)} className="text-xs text-amber-500 font-medium hover:underline transition-all">Trocar barbeiro</button>
@@ -262,7 +262,7 @@ const NewBooking: React.FC = () => {
 
       {step === 4 && (
         <div className="max-w-xl mx-auto space-y-8">
-          <h2 className="text-2xl font-serif font-bold text-white text-center">Revise seu agendamento</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-white text-center">Revise seu agendamento</h2>
           
           <div className="glass p-8 rounded-[2.5rem] border border-slate-700 space-y-6">
             <div className="flex justify-between items-start pb-6 border-b border-slate-700">
