@@ -1,26 +1,30 @@
 import type {VercelRequest,VercelResponse} from '@vercel/node';
-import Stripe from 'stripe';
+import crypto from 'node:crypto';
 import {db} from '../_lib/db';
-export const config={api:{bodyParser:false}};
-async function raw(req:VercelRequest){const chunks:any[]=[];for await(const c of req)chunks.push(c);return Buffer.concat(chunks);}
+import {mp,normalizeSubscriptionStatus} from '../_lib/mercadopago';
+function validSignature(req:VercelRequest,id:string){
+ const secret=process.env.MERCADO_PAGO_WEBHOOK_SECRET;if(!secret)return false;
+ const signature=String(req.headers['x-signature']||''),requestId=String(req.headers['x-request-id']||'');
+ const parts=Object.fromEntries(signature.split(',').map(x=>x.trim().split('=')));
+ if(!parts.ts||!parts.v1)return false;
+ const manifest=`id:${id};request-id:${requestId};ts:${parts.ts};`;
+ const expected=crypto.createHmac('sha256',secret).update(manifest).digest('hex');
+ return expected.length===parts.v1.length&&crypto.timingSafeEqual(Buffer.from(expected),Buffer.from(parts.v1));
+}
 export default async function handler(req:VercelRequest,res:VercelResponse){
  if(req.method!=='POST')return res.status(405).end();
+ const type=String(req.query.type||req.body?.type||''),id=String(req.query['data.id']||req.body?.data?.id||'');
+ if(!id)return res.status(200).json({received:true});
+ if(!validSignature(req,id))return res.status(401).json({error:'Assinatura do webhook inválida.'});
  try{
-  const key=process.env.STRIPE_SECRET_KEY,secret=process.env.STRIPE_WEBHOOK_SECRET;
-  if(!key||!secret)return res.status(503).end();
-  const stripe=new Stripe(key);
-  const event=stripe.webhooks.constructEvent(await raw(req),req.headers['stripe-signature'] as string,secret);
-  const obj:any=event.data.object;let tenantId:string|undefined,status:string|undefined,customerId:string|undefined,subscriptionId:string|undefined;
-  if(event.type==='checkout.session.completed'){
-   tenantId=obj.metadata?.tenantId;customerId=typeof obj.customer==='string'?obj.customer:obj.customer?.id;
-   subscriptionId=typeof obj.subscription==='string'?obj.subscription:obj.subscription?.id;
-   if(subscriptionId){const sub:any=await stripe.subscriptions.retrieve(subscriptionId);tenantId=tenantId||sub.metadata?.tenantId;status=sub.status;customerId=customerId||(typeof sub.customer==='string'?sub.customer:sub.customer?.id);}
-  }else if(event.type==='customer.subscription.updated'||event.type==='customer.subscription.created'){
-   tenantId=obj.metadata?.tenantId;status=obj.status;subscriptionId=obj.id;customerId=typeof obj.customer==='string'?obj.customer:obj.customer?.id;
-  }else if(event.type==='customer.subscription.deleted'){
-   tenantId=obj.metadata?.tenantId;status='canceled';subscriptionId=obj.id;customerId=typeof obj.customer==='string'?obj.customer:obj.customer?.id;
+  if(type==='subscription_preapproval'){
+   const sub=await mp(`/preapproval/${encodeURIComponent(id)}`);
+   const tenantId=String(sub.external_reference||'');
+   if(tenantId)await db().query(`UPDATE tenants SET billing_provider='mercado_pago',billing_subscription_id=$1,billing_customer_id=COALESCE($2,billing_customer_id),subscription_status=$3,updated_at=now() WHERE id=$4`,[sub.id,sub.payer_id?String(sub.payer_id):null,normalizeSubscriptionStatus(sub.status),tenantId]);
+  }else if(type==='subscription_authorized_payment'){
+   const invoice=await mp(`/authorized_payments/${encodeURIComponent(id)}`);
+   if(invoice.preapproval_id){const sub=await mp(`/preapproval/${encodeURIComponent(invoice.preapproval_id)}`);const tenantId=String(sub.external_reference||'');if(tenantId)await db().query('UPDATE tenants SET subscription_status=$1,updated_at=now() WHERE id=$2',[normalizeSubscriptionStatus(sub.status),tenantId]);}
   }
-  if(status&&tenantId)await db().query('UPDATE tenants SET subscription_status=$1,stripe_customer_id=COALESCE($2,stripe_customer_id),stripe_subscription_id=COALESCE($3,stripe_subscription_id),updated_at=now() WHERE id=$4',[status,customerId||null,subscriptionId||null,tenantId]);
   return res.json({received:true});
- }catch(e:any){console.error('Stripe webhook failed',e);return res.status(400).json({error:'Webhook inválido.'});}
+ }catch(e){console.error('Mercado Pago webhook failed',e);return res.status(500).json({error:'Falha ao processar notificação.'});}
 }
