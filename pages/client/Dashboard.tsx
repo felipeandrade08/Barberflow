@@ -10,7 +10,7 @@ const ClientDashboard: React.FC = () => {
   const [comment, setComment] = useState('');
 
   const myBookings = bookings.filter(b => b.userId === currentUser?.id);
-  const today=new Date().toISOString().slice(0,10);
+  const today=new Intl.DateTimeFormat('en-CA',{timeZone:settings.timezone||'America/Sao_Paulo'}).format(new Date());
   const upcoming=myBookings.filter(b=>!['finished','cancelled'].includes(b.status)&&b.date>=today).sort((a,b)=>`${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
   const history=myBookings.filter(b=>['finished','cancelled'].includes(b.status)||b.date<today).sort((a,b)=>`${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`));
   const loyaltyPoints = currentUser?.loyaltyPoints || 0;
