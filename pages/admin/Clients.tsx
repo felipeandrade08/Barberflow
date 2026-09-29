@@ -29,7 +29,7 @@ const AdminClients: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-7 pb-10 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="page-title">Clientes</h1>
@@ -40,7 +40,7 @@ const AdminClients: React.FC = () => {
           <input
             type="text"
             placeholder="Buscar por nome ou e-mail..."
-            className="bg-slate-800 border border-slate-700 rounded-xl py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-amber-500 outline-none w-full md:w-80"
+            className="field !pl-10 w-full md:w-80"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -102,7 +102,7 @@ const AdminClients: React.FC = () => {
                   <td colSpan={5} className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center text-slate-500">
                       <User size={48} className="mb-2 opacity-20" />
-                      <p>Nenhum cliente encontrado</p>
+                      <p className="font-semibold text-slate-300">{clients.length?'Nenhum cliente corresponde à busca.':'Nenhum cliente cadastrado ainda.'}</p><p className="text-xs mt-2 max-w-sm">{clients.length?'Tente buscar por outro nome ou e-mail.':'Os clientes aparecerão aqui após criarem a conta na página da barbearia.'}</p>
                     </div>
                   </td>
                 </tr>
