@@ -1,0 +1,1 @@
+import type {VercelRequest,VercelResponse} from '@vercel/node';import {billingRoute} from '../_lib/billingRoutes';export default async function handler(req:VercelRequest,res:VercelResponse){const action=Array.isArray(req.query.action)?req.query.action[0]:String(req.query.action||'');return billingRoute(req,res,action);}
