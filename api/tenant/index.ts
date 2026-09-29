@@ -21,6 +21,10 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
     if(req.method==='PUT' && req.body?.kind==='settings'){
       if(s.role!=='admin')return res.status(403).json({error:'Acesso restrito ao administrador.'});
       const x=req.body.settings||{};
+      const interval=Number(x.bookingInterval),cancelHours=Number(x.cancellationHours);
+      if(!x.name?.trim()||!/^\d{2}:\d{2}$/.test(x.openTime||'')||!/^\d{2}:\d{2}$/.test(x.closeTime||'')||x.openTime>=x.closeTime)return res.status(400).json({error:'Nome e horário de funcionamento válidos são obrigatórios.'});
+      if(![15,30,60].includes(interval)||![0,2,6,24].includes(cancelHours))return res.status(400).json({error:'Regras de agenda inválidas.'});
+      if(!Array.isArray(x.offDays)||x.offDays.some((d:any)=>!/^\d{4}-\d{2}-\d{2}$/.test(String(d))))return res.status(400).json({error:'Datas de ausência inválidas.'});
       await db().query(`UPDATE tenants SET name=$1,phone=$2,whatsapp=$3,email=$4,address=$5,description=$6,instagram=$7,logo_url=$8,open_time=$9,close_time=$10,booking_interval=$11,cancellation_hours=$12,off_days=$13,theme=$14,qr_color=$15,qr_content=$16,updated_at=now() WHERE id=$17`,[x.name,x.phone,x.whatsapp,x.email,x.address,x.description,x.instagram,x.logoUrl||null,x.openTime,x.closeTime,x.bookingInterval,x.cancellationHours,x.offDays||[],x.theme||'dark',x.qrColor||'#0f172a',x.qrContent||'',s.tenantId]);
       return res.json({ok:true});
     }
