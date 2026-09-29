@@ -25,7 +25,7 @@ const AdminReviews: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="page-title">Avaliações</h1>
-          <p className="text-slate-400">Feedback dos seus clientes sobre os serviços</p>
+          <p className="text-slate-400">Feedback recebido após atendimentos finalizados.</p>
         </div>
       </div>
 
@@ -39,7 +39,7 @@ const AdminReviews: React.FC = () => {
                 <Star key={s} size={20} fill={s <= Math.round(Number(averageRating)) ? "currentColor" : "none"} />
               ))}
             </div>
-            <p className="text-slate-400 text-sm">Média de {reviews.length} avaliações</p>
+            <p className="text-slate-400 text-sm">{reviews.length ? `Média de ${reviews.length} avaliações` : 'Ainda sem avaliações'}</p>
           </div>
 
           <div className="space-y-3">
@@ -87,7 +87,7 @@ const AdminReviews: React.FC = () => {
                   <Scissors size={12} />
                   <span>{b.serviceName}</span>
                 </div>
-                <p className="text-slate-300 text-sm italic">"{b.rating!.comment}"</p>
+                {b.rating!.comment&&<p className="text-slate-300 text-sm">{b.rating!.comment}</p>}
               </div>
             </div>
           )) : (
