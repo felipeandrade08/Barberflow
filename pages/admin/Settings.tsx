@@ -54,7 +54,7 @@ const AdminSettings: React.FC = () => {
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           {/* Business Info */}
-          <div className="glass p-8 rounded-3xl border border-slate-700 space-y-6">
+          <div className="surface p-6 lg:p-8 space-y-6">
             <h2 className="text-xl font-bold text-white flex items-center">
               <MapPin className="mr-2 text-amber-500" size={20} />
               Informações Gerais
@@ -64,7 +64,7 @@ const AdminSettings: React.FC = () => {
                 <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Nome da Barbearia</label>
                 <input
                   type="text"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                  className="field"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
@@ -73,18 +73,18 @@ const AdminSettings: React.FC = () => {
                 <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Telefone</label>
                 <input
                   type="text"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                  className="field"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 />
               </div>
               <div>
                 <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">WhatsApp (somente números)</label>
-                <input type="text" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white" value={formData.whatsapp} onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })} placeholder="5511999998888"/>
+                <input type="text" className="field" value={formData.whatsapp} onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })} placeholder="5511999998888"/>
               </div>
               <div>
                 <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Instagram</label>
-                <input type="text" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white" value={formData.instagram} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="@sua_barbearia"/>
+                <input type="text" className="field" value={formData.instagram} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="@sua_barbearia"/>
               </div>
               <div className="md:col-span-2">
                 <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Descrição pública</label>
@@ -94,7 +94,7 @@ const AdminSettings: React.FC = () => {
                 <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Endereço Completo</label>
                 <input
                   type="text"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                  className="field"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                 />
@@ -102,7 +102,7 @@ const AdminSettings: React.FC = () => {
             </div>
           </div>
 
-          <div className="glass p-8 rounded-3xl border border-slate-700 space-y-6">
+          <div className="surface p-6 lg:p-8 space-y-6">
             <h2 className="text-xl font-bold text-white flex items-center"><Clock className="mr-2 text-amber-500" size={20}/> Regras da agenda</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               <div><label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Abertura</label><input type="time" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white" value={formData.openTime} onChange={e=>setFormData({...formData,openTime:e.target.value})}/></div>
@@ -112,7 +112,7 @@ const AdminSettings: React.FC = () => {
             </div>
           </div>
 
-          <div className="glass p-8 rounded-3xl border border-slate-700 space-y-6">
+          <div className="surface p-6 lg:p-8 space-y-6">
             <h2 className="text-xl font-bold text-white">Timezone e fidelidade</h2>
             <div><label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Fuso horário</label><select className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white" value={formData.timezone||'America/Sao_Paulo'} onChange={e=>setFormData({...formData,timezone:e.target.value})}><option value="America/Sao_Paulo">Brasília / São Paulo</option><option value="America/Manaus">Manaus</option><option value="America/Cuiaba">Cuiabá</option><option value="America/Rio_Branco">Rio Branco</option><option value="America/Noronha">Fernando de Noronha</option></select></div>
             <label className="flex items-center gap-3 text-white"><input type="checkbox" checked={formData.loyaltyEnabled===true} onChange={e=>setFormData({...formData,loyaltyEnabled:e.target.checked})}/>Ativar programa de fidelidade</label>
@@ -120,7 +120,7 @@ const AdminSettings: React.FC = () => {
           </div>
 
           {/* QR Code Section */}
-          <div className="glass p-8 rounded-3xl border border-slate-700 space-y-6">
+          <div className="surface p-6 lg:p-8 space-y-6">
             <h2 className="text-xl font-bold text-white flex items-center">
               <QrCode className="mr-2 text-emerald-500" size={20} />
               Portal do Cliente (QR Code)
@@ -202,7 +202,7 @@ const AdminSettings: React.FC = () => {
 
         <div className="space-y-8">
           {/* Business Hours */}
-          <div className="glass p-8 rounded-3xl border border-slate-700 space-y-6">
+          <div className="surface p-6 lg:p-8 space-y-6">
             <h2 className="text-xl font-bold text-white flex items-center">
               <Clock className="mr-2 text-blue-500" size={20} />
               Horário
@@ -212,7 +212,7 @@ const AdminSettings: React.FC = () => {
                 <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Abertura</label>
                 <input
                   type="time"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                  className="field"
                   value={formData.openTime}
                   onChange={(e) => setFormData({ ...formData, openTime: e.target.value })}
                 />
@@ -221,7 +221,7 @@ const AdminSettings: React.FC = () => {
                 <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Fechamento</label>
                 <input
                   type="time"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                  className="field"
                   value={formData.closeTime}
                   onChange={(e) => setFormData({ ...formData, closeTime: e.target.value })}
                 />
@@ -230,7 +230,7 @@ const AdminSettings: React.FC = () => {
           </div>
 
           {/* Off Days */}
-          <div className="glass p-8 rounded-3xl border border-slate-700 space-y-6">
+          <div className="surface p-6 lg:p-8 space-y-6">
             <h2 className="text-xl font-bold text-white flex items-center">
               <Calendar className="mr-2 text-purple-500" size={20} />
               Ausência
