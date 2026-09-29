@@ -37,7 +37,7 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
         const conflict=await client.query(`SELECT id FROM bookings WHERE tenant_id=$1 AND professional_id=$2 AND date=$3 AND status IN ('pending','confirmed','in_progress') AND time < $4::time + ($5||' minutes')::interval AND time + (duration||' minutes')::interval > $4::time LIMIT 1`,[s.tenantId,x.professionalId,x.date,x.time,service.duration]);
         if(conflict.rowCount){await client.query('ROLLBACK');return res.status(409).json({error:'Este horário já está ocupado.'});}
         const userId=currentRole==='admin'&&x.userId?x.userId:s.userId;
-        const user=(await client.query('SELECT id FROM users WHERE id=$1 AND tenant_id=$2 AND role='client'',[userId,s.tenantId])).rows[0];
+        const user=(await client.query("SELECT id FROM users WHERE id=$1 AND tenant_id=$2 AND role='client'",[userId,s.tenantId])).rows[0];
         if(!user){await client.query('ROLLBACK');return res.status(400).json({error:'Cliente inválido.'});}
         const r=await client.query(`INSERT INTO bookings(tenant_id,user_id,professional_id,service_id,service_price,duration,date,time,status,payment_method,observation) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'pending',null,$9) RETURNING id`,[s.tenantId,userId,x.professionalId,x.serviceId,service.price,service.duration,x.date,x.time,x.observation||null]);
         await client.query('COMMIT'); return res.status(201).json({id:r.rows[0].id});
