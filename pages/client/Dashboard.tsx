@@ -11,7 +11,7 @@ const ClientDashboard: React.FC = () => {
 
   const myBookings = bookings.filter(b => b.userId === currentUser?.id);
   const loyaltyPoints = currentUser?.loyaltyPoints || 0;
-  const targetPoints = 10;
+  const targetPoints = Math.max(1, settings.loyaltyTarget || 10);
   const progress = (loyaltyPoints % targetPoints) / targetPoints * 100;
   const currentCyclePoints = loyaltyPoints % targetPoints;
 
@@ -37,10 +37,9 @@ const ClientDashboard: React.FC = () => {
     }
   };
 
-  const handleReviewSubmit = (e: React.FormEvent) => {
+  const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (reviewBookingId) {
-      addReview(reviewBookingId, rating, comment);
+    if (reviewBookingId && await addReview(reviewBookingId, rating, comment)) {
       setReviewBookingId(null);
       setRating(5);
       setComment('');
@@ -71,7 +70,7 @@ const ClientDashboard: React.FC = () => {
       </div>
 
       {/* Cartão Fidelidade */}
-      <div className="glass p-8 rounded-[2.5rem] border border-amber-500/20 relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 shadow-2xl">
+      {settings.loyaltyEnabled && <div className="glass p-8 rounded-[2.5rem] border border-amber-500/20 relative overflow-hidden bg-gradient-to-br from-slate-900 to-slate-800 shadow-2xl">
         <div className="absolute -right-20 -top-20 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -81,7 +80,7 @@ const ClientDashboard: React.FC = () => {
               <h2 className="text-2xl font-bold">Clube Fidelidade</h2>
             </div>
             <p className="text-slate-400 leading-relaxed">
-              Complete <span className="text-white font-bold">{targetPoints} cortes</span> e ganhe um serviço de <span className="text-amber-500 font-bold">Corte + Barba totalmente grátis!</span>
+              Complete <span className="text-white font-bold">{targetPoints} atendimentos</span>{settings.loyaltyReward ? <> e ganhe <span className="text-amber-500 font-bold">{settings.loyaltyReward}</span></> : <> para completar seu ciclo de fidelidade</>}
             </p>
             <div className="pt-2">
                <div className="flex justify-between items-end mb-2">
@@ -112,7 +111,7 @@ const ClientDashboard: React.FC = () => {
             ))}
           </div>
         </div>
-      </div>
+      </div>}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
