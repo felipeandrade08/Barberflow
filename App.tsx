@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar';
 import AdminDashboard from './pages/admin/Dashboard';
 import AdminBookings from './pages/admin/Bookings';
 import AdminServices from './pages/admin/Services';
+import AdminProfessionals from './pages/admin/Professionals';
 import AdminClients from './pages/admin/Clients';
 import AdminSettings from './pages/admin/Settings';
 import AdminReviews from './pages/admin/Reviews';
@@ -28,7 +29,7 @@ const MainLayout:React.FC=()=>{
 
  if(currentUser.role==='platform_admin') return <MasterDashboard/>;
  const render=()=>currentUser.role==='admin'
- ? ({dashboard:<AdminDashboard/>,bookings:<AdminBookings/>,services:<AdminServices/>,clients:<AdminClients/>,reviews:<AdminReviews/>,billing:<AdminBilling/>,settings:<AdminSettings/>, 'new-booking':<NewBooking/>} as any)[activeTab]||<AdminDashboard/>
+ ? ({dashboard:<AdminDashboard/>,bookings:<AdminBookings/>,services:<AdminServices/>,professionals:<AdminProfessionals/>,clients:<AdminClients/>,reviews:<AdminReviews/>,billing:<AdminBilling/>,settings:<AdminSettings/>, 'new-booking':<NewBooking/>} as any)[activeTab]||<AdminDashboard/>
  : ({dashboard:<ClientDashboard/>, 'new-booking':<NewBooking/>} as any)[activeTab]||<ClientDashboard/>;
 
  return <div className="flex h-screen overflow-hidden">
