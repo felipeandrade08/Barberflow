@@ -5,13 +5,14 @@ import { Mail, ArrowRight, User as UserIcon, Phone, LockKeyhole, Eye, EyeOff, Sh
 
 const Login:React.FC<{onBack?:()=>void}> = ({onBack}) => {
   const {login,register,settings}=useApp();
+  const masterMode=window.location.pathname.startsWith('/master');
   const [isRegister,setIsRegister]=useState(false); const [email,setEmail]=useState(''); const [name,setName]=useState(''); const [phone,setPhone]=useState(''); const [password,setPassword]=useState(''); const [show,setShow]=useState(false); const [error,setError]=useState('');
-  const submit=async(e:React.FormEvent)=>{e.preventDefault();setError('');if(isRegister){if(!name||!email||!phone||password.length<6){setError('Preencha os campos. A senha precisa ter pelo menos 6 caracteres.');return;}const ok=await register(name,email,phone,password);if(!ok)setError('Não foi possível criar a conta.');else window.location.hash=window.location.pathname.startsWith('/master')?'dashboard':'dashboard';}else{const ok=await login(email,password);if(!ok)setError('E-mail ou senha incorretos.');else window.location.hash=window.location.pathname.startsWith('/master')?'dashboard':'dashboard';}};
+  const submit=async(e:React.FormEvent)=>{e.preventDefault();setError('');if(isRegister&&!masterMode){if(!name||!email||!phone||password.length<6){setError('Preencha os campos. A senha precisa ter pelo menos 6 caracteres.');return;}const ok=await register(name,email,phone,password);if(!ok)setError('Não foi possível criar a conta.');else window.location.hash='dashboard';}else{const ok=await login(email,password);if(!ok)setError('E-mail ou senha incorretos.');else window.location.hash='dashboard';}};
   return <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
-    <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=1800&auto=format&fit=crop')] bg-cover bg-center opacity-10"/>
+    <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(245,158,11,.12),transparent_35%),radial-gradient(circle_at_80%_80%,rgba(59,130,246,.08),transparent_30%)]"/>
     <div className="relative w-full max-w-md glass p-8 sm:p-10 rounded-[2rem] border border-white/10 shadow-2xl">
       {onBack&&<button onClick={onBack} className="text-xs text-slate-500 hover:text-white mb-6">← Voltar para o site</button>}
-      <div className="text-center mb-8"><Logo size={48} className="mx-auto mb-4"/><h1 className="text-3xl font-serif font-bold gradient-text">{settings.name}</h1><p className="text-slate-500 text-sm mt-2">{isRegister?'Crie sua conta para agendar':'Entre para gerenciar seus horários'}</p></div>
+      <div className="text-center mb-8"><Logo size={48} className="mx-auto mb-4"/><h1 className="text-3xl font-serif font-bold gradient-text">{masterMode?'BarberFlow Master':settings.name}</h1><p className="text-slate-500 text-sm mt-2">{masterMode?'Acesso administrativo da plataforma':isRegister?'Crie sua conta para agendar':'Entre para gerenciar seus horários'}</p></div>
       <form onSubmit={submit} className="space-y-4">
         {isRegister&&<><Field icon={UserIcon} placeholder="Nome completo" value={name} onChange={setName}/><Field icon={Phone} placeholder="WhatsApp / telefone" value={phone} onChange={setPhone}/></>}
         <Field icon={Mail} type="email" placeholder="Seu e-mail" value={email} onChange={setEmail}/>
@@ -19,7 +20,7 @@ const Login:React.FC<{onBack?:()=>void}> = ({onBack}) => {
         {error&&<div className="text-red-400 text-sm bg-red-500/10 border border-red-500/10 rounded-xl p-3">{error}</div>}
         <button className="w-full bg-amber-500 text-slate-950 py-4 rounded-2xl font-extrabold flex justify-center items-center gap-2 hover:bg-amber-400 transition shadow-lg shadow-amber-500/10">{isRegister?'Criar minha conta':'Entrar'}<ArrowRight size={19}/></button>
       </form>
-      <button onClick={()=>{setIsRegister(!isRegister);setError('')}} className="w-full text-center mt-6 text-sm text-slate-400 hover:text-amber-400">{isRegister?'Já tenho uma conta':'Ainda não sou cliente — criar conta'}</button>
+      {!masterMode&&<button onClick={()=>{setIsRegister(!isRegister);setError('')}} className="w-full text-center mt-6 text-sm text-slate-400 hover:text-amber-400">{isRegister?'Já tenho uma conta':'Ainda não sou cliente — criar conta'}</button>}
       {!isRegister&&<div className="mt-6 p-3 rounded-xl bg-slate-900 border border-white/5 text-[11px] text-slate-500 flex gap-2"><ShieldCheck size={15} className="text-emerald-500 shrink-0"/> Login protegido por sessão HttpOnly e banco PostgreSQL.</div>}
     </div>
   </div>
