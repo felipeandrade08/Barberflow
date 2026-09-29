@@ -4,7 +4,13 @@ ALTER TABLE tenants
   ADD COLUMN IF NOT EXISTS billing_customer_id varchar(160),
   ADD COLUMN IF NOT EXISTS billing_subscription_id varchar(160);
 
-UPDATE tenants SET billing_customer_id=COALESCE(billing_customer_id,stripe_customer_id),billing_subscription_id=COALESCE(billing_subscription_id,stripe_subscription_id) WHERE stripe_customer_id IS NOT NULL OR stripe_subscription_id IS NOT NULL;
+DO $
+BEGIN
+ IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='tenants' AND column_name='stripe_customer_id')
+    AND EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='tenants' AND column_name='stripe_subscription_id') THEN
+   EXECUTE 'UPDATE tenants SET billing_customer_id=COALESCE(billing_customer_id,stripe_customer_id), billing_subscription_id=COALESCE(billing_subscription_id,stripe_subscription_id) WHERE stripe_customer_id IS NOT NULL OR stripe_subscription_id IS NOT NULL';
+ END IF;
+END $;
 
 DO $$
 BEGIN
