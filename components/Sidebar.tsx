@@ -1,7 +1,7 @@
 import React,{useState} from 'react';
 import {useApp} from '../context/AppContext';
 import Logo from './Logo';
-import {LayoutDashboard,Calendar,Users,Scissors,Star,Settings,LogOut,CreditCard,Clock,PlusSquare,Sun,Moon,X,Menu,ExternalLink} from 'lucide-react';
+import {LayoutDashboard,Calendar,Users,Scissors,Star,Settings,LogOut,CreditCard,Clock,PlusSquare,Sun,Moon,X,Menu,ExternalLink,Headphones} from 'lucide-react';
 
 const Sidebar:React.FC<{activeTab:string;onTabChange:(tab:string)=>void}>=({activeTab,onTabChange})=>{
  const {currentUser,logout,settings,toggleTheme}=useApp();const [open,setOpen]=useState(false);const admin=currentUser?.role==='admin';const barber=currentUser?.role==='barber';
