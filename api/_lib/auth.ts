@@ -1,7 +1,11 @@
 import crypto from 'node:crypto';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const secret = () => process.env.AUTH_SECRET || 'change-me-in-production';
+const secret = () => {
+  const value = process.env.AUTH_SECRET;
+  if (!value || value.length < 32) throw new Error('AUTH_SECRET deve possuir pelo menos 32 caracteres.');
+  return value;
+};
 const b64 = (s: string | Buffer) => Buffer.from(s).toString('base64url');
 const unb64 = (s: string) => Buffer.from(s, 'base64url').toString();
 export function hashPassword(password: string) {
