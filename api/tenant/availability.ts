@@ -21,7 +21,7 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
     if(!['active','trialing'].includes(tenant.subscription_status))return res.status(403).json({error:'Agenda temporariamente indisponível.'});
     if((tenant.off_days||[]).includes(date))return res.json({date,availableTimes:[],closed:true});
 
-    const occupied=(await db().query(`SELECT time,duration FROM bookings WHERE tenant_id=$1 AND professional_id=$2 AND date=$3 AND status IN ('pending','confirmed') ORDER BY time`,[s.tenantId,professionalId,date])).rows;
+    const occupied=(await db().query(`SELECT time,duration FROM bookings WHERE tenant_id=$1 AND professional_id=$2 AND date=$3 AND status IN ('pending','confirmed','in_progress') ORDER BY time`,[s.tenantId,professionalId,date])).rows;
     const open=toMinutes(tenant.open_time),close=toMinutes(tenant.close_time),duration=Number(service.duration),interval=Math.max(5,Number(tenant.booking_interval)||30);
     const availableTimes:string[]=[];
     for(let start=open;start+duration<=close;start+=interval){
