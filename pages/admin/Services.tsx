@@ -14,7 +14,7 @@ const AdminServices: React.FC = () => {
     price: 0,
     duration: 30,
     description: '',
-    image: 'https://images.unsplash.com/photo-1621605815841-aa33c563721e?w=400&h=400&fit=crop',
+    image: '',
   });
 
   const handleOpenCreateModal = () => {
@@ -24,7 +24,7 @@ const AdminServices: React.FC = () => {
       price: 0,
       duration: 30,
       description: '',
-      image: 'https://images.unsplash.com/photo-1621605815841-aa33c563721e?w=400&h=400&fit=crop',
+      image: '',
     });
     setIsModalOpen(true);
   };
@@ -36,7 +36,7 @@ const AdminServices: React.FC = () => {
       price: service.price,
       duration: service.duration,
       description: service.description || '',
-      image: service.image || 'https://images.unsplash.com/photo-1621605815841-aa33c563721e?w=400&h=400&fit=crop',
+      image: service.image || '',
     });
     setIsModalOpen(true);
   };
@@ -87,11 +87,7 @@ const AdminServices: React.FC = () => {
           return (
             <div key={service.id} className="glass rounded-3xl border border-slate-700 overflow-hidden flex flex-col group">
               <div className="h-40 overflow-hidden relative">
-                <img 
-                  src={service.image} 
-                  alt={service.name} 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
+                {service.image?<img src={service.image} alt={service.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>:<div className="w-full h-full bg-slate-800 flex items-center justify-center"><ImageIcon size={36} className="text-slate-600"/></div>}
                 <div className="absolute top-4 right-4 flex space-x-2">
                   <button 
                     onClick={() => handleOpenEditModal(service)}
