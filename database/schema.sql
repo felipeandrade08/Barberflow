@@ -36,5 +36,6 @@ CREATE TABLE IF NOT EXISTS bookings (
 );
 CREATE INDEX IF NOT EXISTS bookings_schedule_idx ON bookings(tenant_id,professional_id,date,time);
 CREATE INDEX IF NOT EXISTS bookings_user_idx ON bookings(tenant_id,user_id,date);
+CREATE INDEX IF NOT EXISTS bookings_active_schedule_idx ON bookings(tenant_id,professional_id,date,time) WHERE status IN ('pending','confirmed');
 
 -- A conta master é criada pelo endpoint /api/master/bootstrap usando MASTER_BOOTSTRAP_SECRET.
