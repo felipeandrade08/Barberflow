@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Calendar, Clock, Scissors, AlertCircle, CheckCircle2, XCircle, Star, MessageSquare, X, RotateCcw, MapPin, Phone, ExternalLink, Gift, Trophy } from 'lucide-react';
+import { Calendar, Clock, Scissors, CheckCircle2, XCircle, Star, MessageSquare, X, RotateCcw, MapPin, Phone, Gift, Trophy } from 'lucide-react';
 
 const ClientDashboard: React.FC = () => {
   const { bookings, currentUser, cancelBooking, addReview, setPreSelectedServiceId, settings } = useApp();
