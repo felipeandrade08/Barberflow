@@ -112,6 +112,13 @@ const AdminSettings: React.FC = () => {
             </div>
           </div>
 
+          <div className="glass p-8 rounded-3xl border border-slate-700 space-y-6">
+            <h2 className="text-xl font-bold text-white">Timezone e fidelidade</h2>
+            <div><label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Fuso horário</label><select className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white" value={formData.timezone||'America/Sao_Paulo'} onChange={e=>setFormData({...formData,timezone:e.target.value})}><option value="America/Sao_Paulo">Brasília / São Paulo</option><option value="America/Manaus">Manaus</option><option value="America/Cuiaba">Cuiabá</option><option value="America/Rio_Branco">Rio Branco</option><option value="America/Noronha">Fernando de Noronha</option></select></div>
+            <label className="flex items-center gap-3 text-white"><input type="checkbox" checked={formData.loyaltyEnabled===true} onChange={e=>setFormData({...formData,loyaltyEnabled:e.target.checked})}/>Ativar programa de fidelidade</label>
+            {formData.loyaltyEnabled&&<div className="grid md:grid-cols-2 gap-4"><div><label className="text-xs text-slate-500 uppercase font-bold">Atendimentos para recompensa</label><input type="number" min={1} max={100} value={formData.loyaltyTarget||10} onChange={e=>setFormData({...formData,loyaltyTarget:Number(e.target.value)})} className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white"/></div><div><label className="text-xs text-slate-500 uppercase font-bold">Recompensa</label><input value={formData.loyaltyReward||''} onChange={e=>setFormData({...formData,loyaltyReward:e.target.value})} placeholder="Ex.: Corte gratuito" className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-white"/></div></div>}
+          </div>
+
           {/* QR Code Section */}
           <div className="glass p-8 rounded-3xl border border-slate-700 space-y-6">
             <h2 className="text-xl font-bold text-white flex items-center">
