@@ -58,8 +58,8 @@ const ClientDashboard: React.FC = () => {
     <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-white">Bem-vindo, {currentUser?.name}!</h1>
-          <p className="text-slate-400">Gerencie seus agendamentos e seu histórico.</p>
+          <h1 className="text-3xl font-bold text-white">Olá, {currentUser?.name?.split(' ')[0]||'cliente'}</h1>
+          <p className="text-slate-400">Seus próximos horários, histórico e benefícios em um só lugar.</p>
         </div>
 
         <div className="flex space-x-3">
@@ -75,14 +75,14 @@ const ClientDashboard: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-3 text-amber-500">
               <Trophy size={28} />
-              <h2 className="text-2xl font-bold">Clube Fidelidade</h2>
+              <h2 className="text-2xl font-bold">Fidelidade</h2>
             </div>
             <p className="text-slate-400 leading-relaxed">
               Complete <span className="text-white font-bold">{targetPoints} atendimentos</span>{settings.loyaltyReward ? <> e ganhe <span className="text-amber-500 font-bold">{settings.loyaltyReward}</span></> : <> para completar seu ciclo de fidelidade</>}
             </p>
             <div className="pt-2">
                <div className="flex justify-between items-end mb-2">
-                  <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">Seu Progresso</span>
+                  <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">Seu progresso</span>
                   <span className="text-amber-500 font-bold">{currentCyclePoints} / {targetPoints}</span>
                </div>
                {rewardReached&&<p className="text-emerald-400 text-sm font-bold mb-3">Meta atingida{settings.loyaltyReward?` — benefício: ${settings.loyaltyReward}`:''}. Consulte a barbearia para utilização.</p>}
@@ -116,7 +116,7 @@ const ClientDashboard: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           <h2 className="text-xl font-bold text-white flex items-center">
             <Calendar className="mr-2 text-amber-500" size={20} />
-            Meus Agendamentos
+            Meus agendamentos
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {myBookings.length > 0 ? myBookings.map((b) => (
@@ -154,7 +154,7 @@ const ClientDashboard: React.FC = () => {
                       onClick={() => cancelBooking(b.id)}
                       className="w-full py-2.5 rounded-xl border border-red-500/30 text-red-500 text-sm font-bold hover:bg-red-500 hover:text-white transition-all"
                     >
-                      Cancelar Agendamento
+                      Cancelar agendamento
                     </button>
                   )}
 
@@ -163,7 +163,7 @@ const ClientDashboard: React.FC = () => {
                       onClick={() => setReviewBookingId(b.id)}
                       className="w-full py-2.5 rounded-xl bg-amber-500 text-slate-900 text-sm font-bold hover:bg-amber-400 transition-all"
                     >
-                      Avaliar Atendimento
+                      Avaliar atendimento
                     </button>
                   )}
 
@@ -173,7 +173,7 @@ const ClientDashboard: React.FC = () => {
                       className="w-full py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-sm font-bold hover:bg-slate-700 transition-all flex items-center justify-center space-x-2"
                     >
                       <RotateCcw size={14} />
-                      <span>Agendar Novamente</span>
+                      <span>Agendar novamente</span>
                     </button>
                   )}
                 </div>
@@ -202,7 +202,7 @@ const ClientDashboard: React.FC = () => {
         <div className="space-y-6">
           <h2 className="text-xl font-bold text-white flex items-center">
             <MapPin className="mr-2 text-amber-500" size={20} />
-            Onde Estamos
+            Onde estamos
           </h2>
           
           <div className="glass rounded-[2.5rem] border border-slate-700 overflow-hidden shadow-xl">
@@ -212,7 +212,7 @@ const ClientDashboard: React.FC = () => {
 
             <div className="p-8 space-y-6">
               <div>
-                <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-2">Nosso Endereço</p>
+                <p className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-2">Endereço</p>
                 <p className="text-white font-medium text-lg leading-snug">{settings.address||'Endereço ainda não informado.'}</p>
               </div>
 
@@ -221,7 +221,7 @@ const ClientDashboard: React.FC = () => {
                   <Phone size={20} />
                 </div>
                 <div>
-                  <p className="text-[10px] text-slate-500 uppercase tracking-tighter font-bold">Fale Conosco</p>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-tighter font-bold">Contato</p>
                   <p className="text-white font-bold">{settings.phone}</p>
                 </div>
               </div>}
@@ -266,7 +266,7 @@ const ClientDashboard: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Comentário (Opcional)</label>
+              <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Comentário (opcional)</label>
               <textarea
                 className="w-full bg-slate-900 border border-slate-700 rounded-2xl px-4 py-4 focus:ring-2 focus:ring-amber-500 outline-none text-white h-32 resize-none"
                 placeholder="Conte-nos o que achou..."
@@ -280,7 +280,7 @@ const ClientDashboard: React.FC = () => {
               className="w-full bg-amber-500 text-slate-900 py-4 rounded-2xl font-bold text-lg hover:bg-amber-400 transition-all shadow-lg flex items-center justify-center space-x-2"
             >
               <MessageSquare size={20} />
-              <span>Enviar Avaliação</span>
+              <span>Enviar avaliação</span>
             </button>
           </form>
         </div>
