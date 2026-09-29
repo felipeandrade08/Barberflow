@@ -60,7 +60,7 @@ const AdminBookings: React.FC = () => {
   return (
     <div className="space-y-7 pb-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="page-title">Gerenciar Agendamentos</h1>
+        <h1 className="page-title">Agenda</h1>
         <div className="flex items-center space-x-4">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
@@ -77,7 +77,7 @@ const AdminBookings: React.FC = () => {
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
-            <option value="all">Todos os Status</option>
+            <option value="all">Todos os status</option>
             <option value="pending">Pendentes</option>
             <option value="confirmed">Confirmados</option>
             <option value="in_progress">Em atendimento</option>
@@ -166,7 +166,7 @@ const AdminBookings: React.FC = () => {
               {filteredBookings.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-6 py-10 text-center text-slate-500">
-                    Nenhum agendamento encontrado
+                    Nenhum agendamento corresponde aos filtros.
                   </td>
                 </tr>
               )}
@@ -179,7 +179,7 @@ const AdminBookings: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setShowPaymentModal(null)} />
           <div className="relative glass p-8 rounded-3xl w-full max-w-md border border-slate-700 shadow-2xl animate-in zoom-in-95 duration-300">
-            <h3 className="text-2xl font-bold text-white mb-2 font-serif">Finalizar Atendimento</h3>
+            <h3 className="text-2xl font-bold text-white mb-2 font-serif">Finalizar atendimento</h3>
             <p className="text-slate-400 mb-6">Selecione a forma de pagamento do cliente.</p>
             
             <div className="grid grid-cols-2 gap-4">
@@ -222,7 +222,7 @@ const AdminBookings: React.FC = () => {
             </div>
             
             <div>
-              <h3 className="text-2xl font-bold text-white mb-2 font-serif">Agendar Próxima Visita?</h3>
+              <h3 className="text-2xl font-bold text-white mb-2 font-serif">Agendar próxima visita?</h3>
               <p className="text-slate-400 text-sm">
                 Atendimento de <span className="text-white font-bold">{showFollowUpModal.userName}</span> finalizado. Deseja já agendar o próximo horário para fidelizá-lo?
               </p>

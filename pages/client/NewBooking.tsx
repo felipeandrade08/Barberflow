@@ -78,7 +78,7 @@ const NewBooking: React.FC = () => {
           <CheckCircle2 size={64} />
         </div>
         <div>
-          <h2 className="text-3xl font-serif font-bold text-white">{isAdmin ? 'Agendamento Realizado!' : 'Solicitação de Agendamento Enviada!'}</h2>
+          <h2 className="text-3xl font-bold text-white">{isAdmin ? 'Agendamento realizado' : 'Solicitação enviada'}</h2>
           <p className="text-slate-400 max-w-md mx-auto mt-2">
             O horário para <span className="text-white font-bold">{resolvedClient?.name}</span> com <span className="text-white font-bold">{selectedProfessional?.name}</span> foi solicitado e aguarda confirmação da barbearia.
           </p>
@@ -97,7 +97,7 @@ const NewBooking: React.FC = () => {
           }}
           className="bg-amber-500 text-slate-900 px-8 py-3 rounded-xl font-bold hover:bg-amber-400 transition-all"
         >
-          {isAdmin ? 'Voltar para Agendamentos' : 'Ver Meus Agendamentos'}
+          {isAdmin ? 'Voltar para a agenda' : 'Ver meus agendamentos'}
         </button>
       </div>
     );
@@ -106,12 +106,12 @@ const NewBooking: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-in fade-in duration-500">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-3xl font-serif font-bold text-white">
-          {isAdmin ? `Agendando para: ${resolvedClient?.name}` : 'Novo Agendamento'}
+        <h1 className="text-3xl font-bold tracking-tight text-white">
+          {isAdmin ? `Agendando para: ${resolvedClient?.name}` : 'Novo agendamento'}
         </h1>
         {isAdmin && (
            <span className="text-xs bg-amber-500/20 text-amber-500 px-3 py-1 rounded-full font-bold uppercase tracking-widest border border-amber-500/30">
-             Modo Follow-up
+             Retorno do cliente
            </span>
         )}
       </div>
@@ -131,7 +131,7 @@ const NewBooking: React.FC = () => {
 
       {step === 1 && (
         <div className="space-y-6">
-          <h2 className="text-2xl font-serif font-bold text-white">Selecione o Serviço</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-white">Escolha o serviço</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {services.filter(s => s.active !== false).map((s) => (
               <button
@@ -165,7 +165,7 @@ const NewBooking: React.FC = () => {
       {step === 2 && (
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-serif font-bold text-white">Escolha o Barbeiro</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-white">Escolha o profissional</h2>
             <button onClick={() => setStep(1)} className="text-sm text-amber-500 font-medium hover:underline transition-all">Trocar serviço</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -199,7 +199,7 @@ const NewBooking: React.FC = () => {
       {step === 3 && (
         <div className="space-y-8">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-serif font-bold text-white">Data e Horário</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-white">Data e horário</h2>
             <div className="flex space-x-3">
                <button onClick={() => setStep(1)} className="text-xs text-slate-400 hover:text-white transition-colors">Trocar serviço</button>
                <button onClick={() => setStep(2)} className="text-xs text-amber-500 font-medium hover:underline transition-all">Trocar barbeiro</button>
@@ -251,9 +251,9 @@ const NewBooking: React.FC = () => {
             <button
               disabled={!selectedDate || !selectedTime || isOffDay(selectedDate)}
               onClick={() => setStep(4)}
-              className="bg-amber-500 disabled:opacity-50 disabled:cursor-not-allowed text-slate-900 px-8 py-3 rounded-xl font-bold hover:bg-amber-400 transition-all flex items-center space-x-2 shadow-lg shadow-amber-500/10 active:scale-95"
+              className="btn-primary px-8"
             >
-              <span>Revisar Agendamento</span>
+              <span>Revisar agendamento</span>
               <ArrowRight size={18} />
             </button>
           </div>
@@ -262,7 +262,7 @@ const NewBooking: React.FC = () => {
 
       {step === 4 && (
         <div className="max-w-xl mx-auto space-y-8">
-          <h2 className="text-2xl font-serif font-bold text-white text-center">Resumo do Agendamento</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-white text-center">Revise seu agendamento</h2>
           
           <div className="glass p-8 rounded-[2.5rem] border border-slate-700 space-y-6">
             <div className="flex justify-between items-start pb-6 border-b border-slate-700">
@@ -278,7 +278,7 @@ const NewBooking: React.FC = () => {
             </div>
 
             <div className="pb-6 border-b border-slate-700">
-               <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-3">Profissional Selecionado</p>
+               <p className="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-3">Profissional</p>
                <div className="flex items-center space-x-3">
                   <img src={selectedProfessional?.avatar} className="w-12 h-12 rounded-full border border-slate-600" />
                   <div>
@@ -300,7 +300,7 @@ const NewBooking: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Observações (Opcional)</label>
+              <label className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Observações (opcional)</label>
               <textarea
                 className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white h-24 resize-none"
                 placeholder="Ex: Alergia a algum produto..."
@@ -313,15 +313,15 @@ const NewBooking: React.FC = () => {
           <div className="flex flex-col space-y-4">
             <button
               onClick={handleSubmit}
-              className="w-full bg-amber-500 text-slate-900 py-4 rounded-2xl font-bold text-lg hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/10 active:scale-95"
+              className="btn-primary w-full py-4"
             >
-              Confirmar Reserva
+              Confirmar agendamento
             </button>
             <button
               onClick={() => setStep(3)}
               className="w-full py-4 text-slate-400 hover:text-white font-bold transition-all"
             >
-              Voltar e Alterar
+              Voltar e alterar
             </button>
           </div>
         </div>

@@ -12,7 +12,7 @@ const AdminProfessionals:React.FC=()=>{
  React.useEffect(()=>setHours(initial),[initial]);
  const create=async(e:React.FormEvent)=>{e.preventDefault();if(await addProfessional(form))setForm({name:'',role:'Barbeiro',specialty:'',avatar:''})};
  const addBlock=async()=>{if(!selected||!block.date)return;if(await addProfessionalTimeOff({professionalId:selected.id,...block}))setBlock({date:'',startTime:'09:00',endTime:'19:00',reason:''})};
- return <div className="space-y-7"><div><h1 className="page-title">Profissionais</h1><p className="text-slate-400">Equipe, jornada semanal, intervalos e indisponibilidades.</p></div>
+ return <div className="space-y-7"><div><h1 className="page-title">Equipe</h1><p className="page-subtitle">Profissionais, jornadas, intervalos e indisponibilidades.</p></div>
  <div className="grid xl:grid-cols-[1fr_1.6fr] gap-6"><div className="space-y-5">
   <form onSubmit={create} className="glass border border-slate-700 rounded-3xl p-6 space-y-3"><h2 className="font-bold text-white flex gap-2"><Plus size={19} className="text-amber-500"/>Novo profissional</h2>
    <input required placeholder="Nome" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} className="field"/>

@@ -47,7 +47,7 @@ const AdminSettings: React.FC = () => {
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-20">
       <div>
-        <h1 className="text-3xl font-serif font-bold text-white dark:text-white">Configurações</h1>
+        <h1 className="page-title">Configurações</h1>
         <p className="text-slate-400">Centralize dados da marca, atendimento, horários e experiência do cliente</p>
       </div>
 
