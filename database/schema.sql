@@ -4,12 +4,12 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE TABLE IF NOT EXISTS tenants (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), slug varchar(80) UNIQUE NOT NULL, name varchar(160) NOT NULL,
   phone varchar(40), whatsapp varchar(40), email varchar(180), address text, description text, instagram varchar(120), logo_url text,
-  open_time time NOT NULL DEFAULT '09:00', close_time time NOT NULL DEFAULT '19:00', booking_interval int NOT NULL DEFAULT 30,
+  open_time time NOT NULL DEFAULT '09:00', close_time time NOT NULL DEFAULT '19:00', booking_interval int NOT NULL DEFAULT 30 CHECK (booking_interval BETWEEN 5 AND 240),
   cancellation_hours int NOT NULL DEFAULT 2, off_days text[] NOT NULL DEFAULT '{}', theme varchar(20) NOT NULL DEFAULT 'dark',
   qr_color varchar(20) DEFAULT '#0f172a', qr_content text, subscription_status varchar(40) NOT NULL DEFAULT 'trialing',
   timezone varchar(80) NOT NULL DEFAULT 'America/Sao_Paulo', loyalty_enabled boolean NOT NULL DEFAULT false,
   loyalty_target int NOT NULL DEFAULT 10 CHECK (loyalty_target BETWEEN 1 AND 100), loyalty_reward varchar(160),
-  stripe_customer_id varchar(120), stripe_subscription_id varchar(120), created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), deleted_at timestamptz
+  billing_provider varchar(30) NOT NULL DEFAULT 'mercado_pago', billing_customer_id varchar(160), billing_subscription_id varchar(160), created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), deleted_at timestamptz
 );
 CREATE TABLE IF NOT EXISTS users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
@@ -40,7 +40,7 @@ CREATE INDEX IF NOT EXISTS professional_time_off_lookup_idx ON professional_time
 
 CREATE TABLE IF NOT EXISTS services (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  name varchar(160) NOT NULL, price numeric(10,2) NOT NULL, duration int NOT NULL DEFAULT 30, description text, image text,
+  name varchar(160) NOT NULL, price numeric(10,2) NOT NULL CHECK (price >= 0), duration int NOT NULL DEFAULT 30 CHECK (duration BETWEEN 5 AND 1440), description text, image text,
   active boolean NOT NULL DEFAULT true, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE TABLE IF NOT EXISTS bookings (
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS bookings (
   user_id uuid NOT NULL REFERENCES users(id), professional_id uuid NOT NULL REFERENCES professionals(id), service_id uuid NOT NULL REFERENCES services(id),
   service_price numeric(10,2) NOT NULL, duration int NOT NULL, date date NOT NULL, time time NOT NULL,
   status varchar(30) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','confirmed','in_progress','finished','cancelled')),
-  payment_method varchar(30), observation text, rating_stars int, rating_comment text, rating_date timestamptz,
+  payment_method varchar(30), observation text, rating_stars int CHECK (rating_stars IS NULL OR rating_stars BETWEEN 1 AND 5), rating_comment text, rating_date timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS bookings_schedule_idx ON bookings(tenant_id,professional_id,date,time);
