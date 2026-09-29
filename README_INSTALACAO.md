@@ -93,3 +93,16 @@ Se encontrar problemas, verifique:
 ---
 
 Desenvolvido com ❤️ para barbearias modernas
+
+
+## Banco de dados — Neon PostgreSQL
+
+O BarberFlow usa PostgreSQL por meio da variável `DATABASE_URL`. O provedor recomendado para a implantação atual é o Neon, mas a aplicação continua independente de provedor.
+
+1. Crie o projeto PostgreSQL no Neon.
+2. Configure na Vercel a `DATABASE_URL` pooled fornecida pelo Neon.
+3. No SQL Editor do Neon, execute uma única vez `database/migrations/001_neon_baseline.sql`.
+4. Faça um novo deploy da Vercel.
+5. Com uma sessão admin autenticada, `GET /api/tenant/db-health` deve retornar `ok: true`.
+
+A migration baseline é idempotente e usa `CREATE ... IF NOT EXISTS`; ela inicializa banco vazio sem apagar registros existentes. Nunca salve a connection string real no repositório.
