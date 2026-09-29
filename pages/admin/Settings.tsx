@@ -4,12 +4,12 @@ import { Save, Clock, MapPin, Phone, Calendar, Trash2, Plus, QrCode, Download, S
 import { QRCodeCanvas } from 'qrcode.react';
 
 const AdminSettings: React.FC = () => {
-  const { settings, updateSettings } = useApp();
+  const { settings, updateSettings, tenantSlug } = useApp();
   const [formData, setFormData] = useState(settings);
   const [newOffDay, setNewOffDay] = useState('');
 
-  const defaultUrl = `${window.location.origin}/#new-booking`;
-  const qrValue = formData.qrContent || defaultUrl;
+  const defaultUrl = `${window.location.origin}/b/${tenantSlug}`;
+  const qrValue = defaultUrl;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,6 +86,7 @@ const AdminSettings: React.FC = () => {
                 <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Instagram</label>
                 <input type="text" className="field" value={formData.instagram} onChange={(e) => setFormData({ ...formData, instagram: e.target.value })} placeholder="@sua_barbearia"/>
               </div>
+              <div><label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">URL da logo</label><input type="url" className="field" value={formData.logoUrl||''} onChange={e=>setFormData({...formData,logoUrl:e.target.value})} placeholder="https://..."/></div><div><label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">URL da capa</label><input type="url" className="field" value={formData.coverUrl||''} onChange={e=>setFormData({...formData,coverUrl:e.target.value})} placeholder="https://..."/></div>
               <div className="md:col-span-2">
                 <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Descrição pública</label>
                 <textarea rows={3} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white resize-none" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })}/>
@@ -125,7 +126,7 @@ const AdminSettings: React.FC = () => {
               <QrCode className="mr-2 text-emerald-500" size={20} />
               Portal do Cliente (QR Code)
             </h2>
-            <p className="text-sm text-slate-400">Gere um QR Code para seus clientes acessarem a página de agendamento ou qualquer link/texto personalizado.</p>
+            <p className="text-sm text-slate-400">Este é o link oficial da sua barbearia. Compartilhe no WhatsApp, Instagram, Facebook ou imprima o QR Code.</p>
             
             <div className="flex flex-col md:flex-row items-center gap-10">
               <div className="p-6 bg-white rounded-3xl shadow-xl flex items-center justify-center">
@@ -140,20 +141,7 @@ const AdminSettings: React.FC = () => {
               </div>
 
               <div className="flex-1 space-y-6 w-full">
-                <div>
-                  <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-2 block flex items-center">
-                    <Type size={14} className="mr-1" /> Conteúdo do QR Code (Texto ou URL)
-                  </label>
-                  <input
-                    type="text"
-                    placeholder={defaultUrl}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white text-sm"
-                    value={formData.qrContent || ''}
-                    onChange={(e) => setFormData({ ...formData, qrContent: e.target.value })}
-                  />
-                  <p className="text-[10px] text-slate-500 mt-2 italic">Dica: Deixe vazio para usar o link padrão de agendamento.</p>
-                </div>
-
+                <div><label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-2 block">Link público da barbearia</label><code className="block bg-slate-900 border border-slate-700 p-3 rounded-xl text-xs text-amber-500 break-all">{defaultUrl}</code><div className="flex gap-2 mt-3"><a href={defaultUrl} target="_blank" rel="noreferrer" className="btn-secondary flex-1 justify-center">Visualizar página</a><button type="button" onClick={()=>navigator.clipboard.writeText(defaultUrl)} className="btn-primary flex-1">Copiar link</button></div></div>
                 <div>
                   <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-2 block">Cor do QR Code</label>
                   <div className="flex items-center space-x-3">
