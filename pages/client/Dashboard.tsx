@@ -12,8 +12,9 @@ const ClientDashboard: React.FC = () => {
   const myBookings = bookings.filter(b => b.userId === currentUser?.id);
   const loyaltyPoints = currentUser?.loyaltyPoints || 0;
   const targetPoints = Math.max(1, settings.loyaltyTarget || 10);
-  const progress = (loyaltyPoints % targetPoints) / targetPoints * 100;
-  const currentCyclePoints = loyaltyPoints % targetPoints;
+  const currentCyclePoints = Math.min(loyaltyPoints,targetPoints);
+  const progress = currentCyclePoints / targetPoints * 100;
+  const rewardReached = loyaltyPoints >= targetPoints;
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -84,6 +85,7 @@ const ClientDashboard: React.FC = () => {
                   <span className="text-slate-500 text-xs font-bold uppercase tracking-widest">Seu Progresso</span>
                   <span className="text-amber-500 font-bold">{currentCyclePoints} / {targetPoints}</span>
                </div>
+               {rewardReached&&<p className="text-emerald-400 text-sm font-bold mb-3">Meta atingida{settings.loyaltyReward?` — benefício: ${settings.loyaltyReward}`:''}. Consulte a barbearia para utilização.</p>}
                <div className="w-full h-4 bg-slate-800 rounded-full border border-slate-700 overflow-hidden p-1">
                   <div 
                     className="h-full bg-gradient-to-r from-amber-600 to-amber-400 rounded-full transition-all duration-1000"

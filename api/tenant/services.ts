@@ -1,12 +1,11 @@
 import type {VercelRequest,VercelResponse} from '@vercel/node';
 import {db} from '../_lib/db';
-import {requireSession} from '../_lib/auth';
+import {requireRole} from '../_lib/authorization';
 
 const valid=(x:any)=>typeof x?.name==='string'&&x.name.trim().length>=2&&Number.isFinite(Number(x.price))&&Number(x.price)>=0&&Number.isInteger(Number(x.duration))&&Number(x.duration)>=5&&Number(x.duration)<=480;
 
 export default async function handler(req:VercelRequest,res:VercelResponse){
-  const session=requireSession(req,res);if(!session)return;
-  if(session.role!=='admin')return res.status(403).json({error:'Acesso restrito.'});
+  const session=await requireRole(req,res,['admin']);if(!session)return;
   try{
     if(req.method==='POST'){
       const x=req.body||{};if(!valid(x))return res.status(400).json({error:'Nome, preço e duração do serviço são inválidos.'});

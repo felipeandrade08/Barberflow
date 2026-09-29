@@ -1,10 +1,9 @@
 import type {VercelRequest,VercelResponse} from '@vercel/node';
 import {db} from '../_lib/db';
-import {requireSession} from '../_lib/auth';
+import {requireRole} from '../_lib/authorization';
 import {localDateTimeToUtc} from '../_lib/scheduling';
 export default async function handler(req:VercelRequest,res:VercelResponse){
- const s=requireSession(req,res);if(!s)return;
- if(s.role!=='admin')return res.status(403).json({error:'Acesso restrito ao administrador.'});
+ const s=await requireRole(req,res,['admin']);if(!s)return;
  if(req.method!=='POST')return res.status(405).end();
  const x=req.body||{};
  if(!x.professionalId||!/^\d{4}-\d{2}-\d{2}$/.test(String(x.date||''))||!/^\d{2}:\d{2}$/.test(String(x.startTime||''))||!/^\d{2}:\d{2}$/.test(String(x.endTime||''))||x.startTime>=x.endTime)return res.status(400).json({error:'Data e período válidos são obrigatórios.'});

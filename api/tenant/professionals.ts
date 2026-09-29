@@ -1,10 +1,9 @@
 import type {VercelRequest,VercelResponse} from '@vercel/node';
 import {db} from '../_lib/db';
-import {requireSession} from '../_lib/auth';
+import {requireRole} from '../_lib/authorization';
 const validTime=(v:any)=>/^\d{2}:\d{2}$/.test(String(v||''));
 export default async function handler(req:VercelRequest,res:VercelResponse){
- const s=requireSession(req,res);if(!s)return;
- if(s.role!=='admin')return res.status(403).json({error:'Acesso restrito ao administrador.'});
+ const s=await requireRole(req,res,['admin']);if(!s)return;
  try{
   const x=req.body||{};
   if(req.method==='POST'){

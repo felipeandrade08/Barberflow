@@ -15,8 +15,7 @@
     "lucide-react": "^0.474.0",
     "recharts": "^2.15.0",
     "qrcode.react": "^3.1.0",
-    "pg": "^8.16.3",
-    "stripe": "^18.4.0"
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@types/react": "^18.3.12",

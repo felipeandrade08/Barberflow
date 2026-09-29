@@ -76,4 +76,4 @@ npm run build
 > Antes de colocar em produção, substitua a autenticação/localStorage por uma API e banco de dados. Nunca use senhas reais armazenadas em `localStorage`.
 
 ## BarberFlow 3.0
-A versão comercial usa Vercel + Railway PostgreSQL + Stripe, com multi-tenant por `tenant_id`, sessão HttpOnly, painel Master e assinatura mensal. Veja `README_V3.md`, `database/schema.sql` e `.env.example`.
+A versão comercial usa Vercel + Neon PostgreSQL + Mercado Pago, com multi-tenant por `tenant_id`, sessão HttpOnly, painel Master e assinatura mensal. Veja `README_V3.md`, `database/schema.sql` e `.env.example`.
