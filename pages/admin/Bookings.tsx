@@ -5,7 +5,7 @@ import { Search, Filter, CheckCircle, XCircle, MoreVertical, CreditCard, Wallet,
 import { BookingStatus, PaymentMethod, Booking } from '../../types';
 
 const AdminBookings: React.FC = () => {
-  const { bookings, updateBooking, setPreSelectedClientId } = useApp();
+  const { bookings, updateBooking, setPreSelectedClientId, currentUser } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showPaymentModal, setShowPaymentModal] = useState<string | null>(null);
@@ -31,7 +31,7 @@ const AdminBookings: React.FC = () => {
     const ok = await updateBooking(id, { status: 'finished', paymentMethod: method });
     if (!ok) return;
     setShowPaymentModal(null);
-    if (booking) setShowFollowUpModal(booking);
+    if (booking && currentUser?.role === 'admin') setShowFollowUpModal(booking);
   };
 
   const handleScheduleFollowUp = () => {
