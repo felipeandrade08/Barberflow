@@ -5,13 +5,15 @@ import { Scissors, Calendar as CalendarIcon, Clock, ArrowRight, CheckCircle2, Al
 import { Service, Professional } from '../../types';
 
 const NewBooking: React.FC = () => {
-  const { services, professionals, settings, addBooking, bookings, addToast, currentUser, preSelectedServiceId, setPreSelectedServiceId, preSelectedClientId, setPreSelectedClientId, users } = useApp();
+  const { services, professionals, settings, addBooking, addToast, currentUser, preSelectedServiceId, setPreSelectedServiceId, preSelectedClientId, setPreSelectedClientId, users } = useApp();
   const [step, setStep] = useState(1);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedProfessional, setSelectedProfessional] = useState<Professional | null>(null);
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [observation, setObservation] = useState('');
+  const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+  const [loadingTimes, setLoadingTimes] = useState(false);
 
   const isAdmin = currentUser?.role === 'admin';
   const resolvedClient = isAdmin && preSelectedClientId ? users.find(u => u.id === preSelectedClientId) : currentUser;
@@ -32,24 +34,20 @@ const NewBooking: React.FC = () => {
     return settings.offDays.includes(date);
   };
 
-  const generateTimeSlots = () => {
-    const slots = [];
-    let current = settings.openTime;
-    const end = settings.closeTime;
-
-    while (current < end) {
-      slots.push(current);
-      const [h, m] = current.split(':').map(Number);
-      let nextM = m + settings.bookingInterval;
-      let nextH = h;
-      if (nextM >= 60) {
-        nextM = 0;
-        nextH++;
-      }
-      current = `${nextH.toString().padStart(2, '0')}:${nextM.toString().padStart(2, '0')}`;
-    }
-    return slots;
-  };
+  useEffect(() => {
+    setSelectedTime('');
+    setAvailableTimes([]);
+    if (!selectedService || !selectedProfessional || !selectedDate || isOffDay(selectedDate)) return;
+    let active = true;
+    setLoadingTimes(true);
+    const params = new URLSearchParams({serviceId:selectedService.id,professionalId:selectedProfessional.id,date:selectedDate});
+    fetch(`/api/tenant/availability?${params.toString()}`)
+      .then(async r => { const data=await r.json(); if(!r.ok) throw new Error(data.error||'Não foi possível consultar os horários.'); return data; })
+      .then(data => { if(active) setAvailableTimes(data.availableTimes||[]); })
+      .catch((e:any) => { if(active) addToast(e.message,'error'); })
+      .finally(() => { if(active) setLoadingTimes(false); });
+    return () => { active=false; };
+  }, [selectedService?.id, selectedProfessional?.id, selectedDate]);
 
   const handleSubmit = async () => {
     if (selectedService && selectedProfessional && selectedDate && selectedTime && resolvedClient) {
@@ -80,9 +78,9 @@ const NewBooking: React.FC = () => {
           <CheckCircle2 size={64} />
         </div>
         <div>
-          <h2 className="text-3xl font-serif font-bold text-white">{isAdmin ? 'Agendamento Realizado!' : 'Seu Agendamento está Confirmado!'}</h2>
+          <h2 className="text-3xl font-serif font-bold text-white">{isAdmin ? 'Agendamento Realizado!' : 'Solicitação de Agendamento Enviada!'}</h2>
           <p className="text-slate-400 max-w-md mx-auto mt-2">
-            O horário para <span className="text-white font-bold">{resolvedClient?.name}</span> com <span className="text-white font-bold">{selectedProfessional?.name}</span> foi reservado.
+            O horário para <span className="text-white font-bold">{resolvedClient?.name}</span> com <span className="text-white font-bold">{selectedProfessional?.name}</span> foi solicitado e aguarda confirmação da barbearia.
           </p>
         </div>
         <button 
@@ -227,7 +225,9 @@ const NewBooking: React.FC = () => {
             <div className="glass p-6 rounded-3xl border border-slate-700">
               <label className="block text-slate-400 text-sm font-medium mb-4 uppercase tracking-widest text-[10px]">Escolha o horário</label>
               <div className="grid grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-2 custom-scrollbar">
-                {generateTimeSlots().map((t) => (
+                {loadingTimes && <div className="col-span-3 py-6 text-center text-sm text-slate-500">Consultando agenda...</div>}
+                {!loadingTimes && selectedDate && !isOffDay(selectedDate) && availableTimes.length===0 && <div className="col-span-3 py-6 text-center text-sm text-slate-500">Nenhum horário disponível nesta data.</div>}
+                {availableTimes.map((t) => (
                   <button
                     key={t}
                     disabled={!selectedDate || isOffDay(selectedDate)}

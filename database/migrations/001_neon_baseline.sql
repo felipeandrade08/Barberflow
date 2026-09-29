@@ -1,4 +1,6 @@
--- BarberFlow 3.0 - PostgreSQL / Neon-ready
+-- BarberFlow baseline migration for PostgreSQL / Neon
+-- Idempotente: pode ser executada em banco vazio sem destruir dados existentes.
+-- BarberFlow 3.0 - PostgreSQL / Railway
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE IF NOT EXISTS tenants (
@@ -30,12 +32,13 @@ CREATE TABLE IF NOT EXISTS bookings (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
   user_id uuid NOT NULL REFERENCES users(id), professional_id uuid NOT NULL REFERENCES professionals(id), service_id uuid NOT NULL REFERENCES services(id),
   service_price numeric(10,2) NOT NULL, duration int NOT NULL, date date NOT NULL, time time NOT NULL,
-  status varchar(30) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','confirmed','in_progress','finished','cancelled')),
+  status varchar(30) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','confirmed','finished','cancelled')),
   payment_method varchar(30), observation text, rating_stars int, rating_comment text, rating_date timestamptz,
   created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS bookings_schedule_idx ON bookings(tenant_id,professional_id,date,time);
 CREATE INDEX IF NOT EXISTS bookings_user_idx ON bookings(tenant_id,user_id,date);
-CREATE INDEX IF NOT EXISTS bookings_active_schedule_idx ON bookings(tenant_id,professional_id,date,time) WHERE status IN ('pending','confirmed','in_progress');
+CREATE INDEX IF NOT EXISTS bookings_active_schedule_idx ON bookings(tenant_id,professional_id,date,time) WHERE status IN ('pending','confirmed');
 
 -- A conta master é criada pelo endpoint /api/master/bootstrap usando MASTER_BOOTSTRAP_SECRET.
+

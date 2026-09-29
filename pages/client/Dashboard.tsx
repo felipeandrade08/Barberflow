@@ -19,6 +19,7 @@ const ClientDashboard: React.FC = () => {
     switch (status) {
       case 'pending': return <Clock className="text-amber-500" size={18} />;
       case 'confirmed': return <CheckCircle2 className="text-blue-500" size={18} />;
+      case 'in_progress': return <Scissors className="text-violet-400" size={18} />;
       case 'finished': return <CheckCircle2 className="text-emerald-500" size={18} />;
       case 'cancelled': return <XCircle className="text-red-500" size={18} />;
       default: return null;
@@ -29,6 +30,7 @@ const ClientDashboard: React.FC = () => {
     switch (status) {
       case 'pending': return 'Aguardando Confirmação';
       case 'confirmed': return 'Confirmado';
+      case 'in_progress': return 'Em atendimento';
       case 'finished': return 'Finalizado';
       case 'cancelled': return 'Cancelado';
       default: return status;

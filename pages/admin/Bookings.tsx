@@ -47,6 +47,7 @@ const AdminBookings: React.FC = () => {
     const styles = {
       pending: 'bg-amber-500/10 text-amber-500 border-amber-500/20',
       confirmed: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+      in_progress: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
       finished: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
       cancelled: 'bg-red-500/10 text-red-500 border-red-500/20',
     };
@@ -80,6 +81,7 @@ const AdminBookings: React.FC = () => {
             <option value="all">Todos os Status</option>
             <option value="pending">Pendentes</option>
             <option value="confirmed">Confirmados</option>
+            <option value="in_progress">Em atendimento</option>
             <option value="finished">Finalizados</option>
             <option value="cancelled">Cancelados</option>
           </select>
@@ -132,6 +134,15 @@ const AdminBookings: React.FC = () => {
                         </button>
                       )}
                       {b.status === 'confirmed' && (
+                        <button
+                          onClick={() => handleStatusChange(b.id, 'in_progress')}
+                          className="p-2 text-violet-400 hover:bg-violet-400/10 rounded-lg"
+                          title="Iniciar atendimento"
+                        >
+                          <CheckCircle size={18} />
+                        </button>
+                      )}
+                      {b.status === 'in_progress' && (
                         <button 
                           onClick={() => handleStatusChange(b.id, 'finished')}
                           className="p-2 text-emerald-400 hover:bg-emerald-400/10 rounded-lg"
