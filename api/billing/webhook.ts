@@ -7,15 +7,16 @@ function validSignature(req:VercelRequest,id:string){
  const signature=String(req.headers['x-signature']||''),requestId=String(req.headers['x-request-id']||'');
  const parts=Object.fromEntries(signature.split(',').map(x=>x.trim().split('=')));
  if(!parts.ts||!parts.v1)return false;
- const manifest=`id:${id};request-id:${requestId};ts:${parts.ts};`;
+ const dataId=id.toLowerCase();
+ const manifest=`id:${dataId};request-id:${requestId};ts:${parts.ts};`;
  const expected=crypto.createHmac('sha256',secret).update(manifest).digest('hex');
  return expected.length===parts.v1.length&&crypto.timingSafeEqual(Buffer.from(expected),Buffer.from(parts.v1));
 }
 export default async function handler(req:VercelRequest,res:VercelResponse){
  if(req.method!=='POST')return res.status(405).end();
- const type=String(req.query.type||req.body?.type||''),id=String(req.query['data.id']||req.body?.data?.id||'');
+ const type=String(req.query.type||req.body?.type||''),queryId=String(req.query['data.id']||''),bodyId=String(req.body?.data?.id||''),id=queryId||bodyId;
  if(!id)return res.status(200).json({received:true});
- if(!validSignature(req,id))return res.status(401).json({error:'Assinatura do webhook inválida.'});
+ if(!queryId||!validSignature(req,queryId))return res.status(401).json({error:'Assinatura do webhook inválida.'});
  try{
   if(type==='subscription_preapproval'){
    const sub=await mp(`/preapproval/${encodeURIComponent(id)}`);
