@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { Search, Filter, CheckCircle, XCircle, MoreVertical, CreditCard, Wallet, Smartphone, DollarSign, CalendarPlus, X } from 'lucide-react';
+import { Search, CheckCircle, XCircle, CreditCard, Wallet, Smartphone, DollarSign, CalendarPlus, X } from 'lucide-react';
 import { BookingStatus, PaymentMethod, Booking } from '../../types';
 
 const AdminBookings: React.FC = () => {
-  const { bookings, updateBooking, setPreSelectedClientId, currentUser } = useApp();
+  const { bookings, updateBooking, setPreSelectedClientId, currentUser, settings } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [dateFilter,setDateFilter]=useState<string>('upcoming');
@@ -16,7 +16,7 @@ const AdminBookings: React.FC = () => {
     const matchesSearch = b.userName.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           b.serviceName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || b.status === statusFilter;
-    const today=new Date().toISOString().slice(0,10);const matchesDate=dateFilter==='all'||(dateFilter==='today'&&b.date===today)||(dateFilter==='upcoming'&&b.date>=today&&!['finished','cancelled'].includes(b.status))||(dateFilter==='history'&&(b.date<today||['finished','cancelled'].includes(b.status)));
+    const today=new Intl.DateTimeFormat('en-CA',{timeZone:settings.timezone||'America/Sao_Paulo'}).format(new Date());const matchesDate=dateFilter==='all'||(dateFilter==='today'&&b.date===today)||(dateFilter==='upcoming'&&b.date>=today&&!['finished','cancelled'].includes(b.status))||(dateFilter==='history'&&(b.date<today||['finished','cancelled'].includes(b.status)));
     return matchesSearch && matchesStatus && matchesDate;
   }).sort((a,b)=>dateFilter==='history'?`${b.date} ${b.time}`.localeCompare(`${a.date} ${a.time}`):`${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`));
 
