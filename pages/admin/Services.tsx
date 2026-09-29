@@ -66,15 +66,15 @@ const AdminServices: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-7 pb-10 animate-in fade-in duration-500">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-white">Serviços</h1>
+          <h1 className="page-title">Serviços</h1>
           <p className="text-slate-400">Gerencie o catálogo de serviços oferecidos</p>
         </div>
         <button
           onClick={handleOpenCreateModal}
-          className="bg-amber-500 text-slate-900 px-6 py-3 rounded-xl font-bold hover:bg-amber-400 transition-all flex items-center space-x-2 shadow-lg shadow-amber-500/10 active:scale-95"
+          className="btn-primary"
         >
           <Plus size={20} />
           <span>Novo Serviço</span>
@@ -154,6 +154,7 @@ const AdminServices: React.FC = () => {
             </div>
           );
         })}
+        {!services.length&&<div className="col-span-full empty-state"><ImageIcon size={38} className="mx-auto mb-3 opacity-40"/><h3 className="text-white font-bold">Catálogo vazio</h3><p className="text-sm mt-2">Cadastre o primeiro serviço com preço e duração para liberar o fluxo de agendamento.</p><button onClick={handleOpenCreateModal} className="btn-primary mt-5 mx-auto"><Plus size={17}/>Cadastrar primeiro serviço</button></div>}
       </div>
 
       {/* Create/Edit Service Modal */}
@@ -187,7 +188,7 @@ const AdminServices: React.FC = () => {
                 <input
                   required
                   type="text"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                  className="field"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
@@ -200,7 +201,7 @@ const AdminServices: React.FC = () => {
                     required
                     type="number"
                     step="0.01"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                    className="field"
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
                   />
@@ -210,7 +211,7 @@ const AdminServices: React.FC = () => {
                   <input
                     required
                     type="number"
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                    className="field"
                     value={formData.duration}
                     onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) })}
                   />
@@ -220,7 +221,7 @@ const AdminServices: React.FC = () => {
               <div>
                 <label className="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1 block">Descrição</label>
                 <textarea
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white h-24 resize-none"
+                  className="field h-24 resize-none"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 />
@@ -231,7 +232,7 @@ const AdminServices: React.FC = () => {
                 <input
                   type="url"
                   placeholder="https://exemplo.com/imagem.jpg"
-                  className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-white"
+                  className="field"
                   value={formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                 />
