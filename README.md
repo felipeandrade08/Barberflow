@@ -77,3 +77,6 @@ npm run build
 
 ## BarberFlow 3.0
 A versão comercial usa Vercel + Neon PostgreSQL + Mercado Pago, com multi-tenant por `tenant_id`, sessão HttpOnly, painel Master e assinatura mensal. Veja `README_V3.md`, `database/schema.sql` e `.env.example`.
+
+
+> Deployment de produção é acionado pela branch `main`.
