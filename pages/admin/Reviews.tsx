@@ -21,17 +21,17 @@ const AdminReviews: React.FC = () => {
   }));
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-7 pb-10 animate-in fade-in duration-500">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-serif font-bold text-white">Avaliações</h1>
+          <h1 className="page-title">Avaliações</h1>
           <p className="text-slate-400">Feedback dos seus clientes sobre os serviços</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Stats Summary */}
-        <div className="glass p-8 rounded-3xl border border-slate-700 h-fit">
+        <div className="surface p-6 lg:p-8 h-fit">
           <div className="text-center mb-8">
             <h3 className="text-5xl font-bold text-white mb-2">{averageRating}</h3>
             <div className="flex justify-center mb-2 text-amber-500">
@@ -61,7 +61,7 @@ const AdminReviews: React.FC = () => {
         {/* Reviews List */}
         <div className="lg:col-span-2 space-y-4">
           {reviews.length > 0 ? reviews.map((b) => (
-            <div key={b.id} className="glass p-6 rounded-3xl border border-slate-700 space-y-4">
+            <div key={b.id} className="surface p-6 space-y-4">
               <div className="flex justify-between items-start">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-amber-500 border border-slate-700">
