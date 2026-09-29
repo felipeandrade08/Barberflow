@@ -47,7 +47,7 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
       const client=await db().connect();
       try{
         await client.query('BEGIN');
-        const before=(await client.query(`SELECT b.id,b.user_id,b.date,b.time,b.status,b.rating_stars,t.cancellation_hours,t.timezone FROM bookings b JOIN tenants t ON t.id=b.tenant_id WHERE b.id=$1 AND b.tenant_id=$2 AND (b.user_id=$3 OR $4='admin') FOR UPDATE`,[x.id,s.tenantId,s.userId,s.role])).rows[0];
+        const before=(await client.query(`SELECT b.id,b.user_id,b.date,b.time,b.status,b.rating_stars,t.cancellation_hours,t.timezone,t.loyalty_enabled FROM bookings b JOIN tenants t ON t.id=b.tenant_id WHERE b.id=$1 AND b.tenant_id=$2 AND (b.user_id=$3 OR $4='admin') FOR UPDATE`,[x.id,s.tenantId,s.userId,s.role])).rows[0];
         if(!before){await client.query('ROLLBACK');return res.status(404).json({error:'Agendamento não encontrado.'});}
         if(x.status && x.status!==before.status){
           const transitions:Record<string,string[]>={pending:['confirmed','cancelled'],confirmed:['in_progress','cancelled'],in_progress:['finished'],finished:[],cancelled:[]};
@@ -62,7 +62,7 @@ export default async function handler(req:VercelRequest,res:VercelResponse){
         if(x.ratingStars!==undefined && before.rating_stars){await client.query('ROLLBACK');return res.status(409).json({error:'Este atendimento já foi avaliado.'});}
         if(s.role!=='admin' && x.ratingStars!==undefined && before.status!=='finished'){await client.query('ROLLBACK');return res.status(409).json({error:'Só é possível avaliar um atendimento finalizado.'});}
         const r=await client.query(`UPDATE bookings SET status=COALESCE($1,status),payment_method=COALESCE($2,payment_method),observation=COALESCE($3,observation),rating_stars=COALESCE($4,rating_stars),rating_comment=COALESCE($5,rating_comment),rating_date=CASE WHEN $4 IS NOT NULL THEN now() ELSE rating_date END,updated_at=now() WHERE id=$6 RETURNING *`,[x.status||null,x.paymentMethod??null,x.observation??null,x.ratingStars??null,x.ratingComment??null,x.id]);
-        if(x.status==='finished'&&before.status!=='finished') await client.query(`UPDATE users SET loyalty_points=COALESCE(loyalty_points,0)+1,last_visit=$1 WHERE id=$2 AND tenant_id=$3`,[before.date,before.user_id,s.tenantId]);
+        if(x.status==='finished'&&before.status!=='finished'&&before.loyalty_enabled===true) await client.query(`UPDATE users SET loyalty_points=COALESCE(loyalty_points,0)+1,last_visit=$1 WHERE id=$2 AND tenant_id=$3`,[before.date,before.user_id,s.tenantId]);
         await client.query('COMMIT'); return res.json({ok:true,booking:r.rows[0]});
       }catch(e){await client.query('ROLLBACK');throw e}finally{client.release();}
     }
