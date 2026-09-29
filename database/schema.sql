@@ -41,7 +41,7 @@ CREATE INDEX IF NOT EXISTS professional_time_off_lookup_idx ON professional_time
 
 CREATE TABLE IF NOT EXISTS services (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(), tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
-  name varchar(160) NOT NULL, price numeric(10,2) NOT NULL CHECK (price >= 0), duration int NOT NULL DEFAULT 30 CHECK (duration BETWEEN 5 AND 1440), description text, image text,
+  name varchar(160) NOT NULL, price numeric(10,2) NOT NULL CHECK (price >= 0), duration int NOT NULL DEFAULT 30 CHECK (duration BETWEEN 5 AND 1440), description text,
   category varchar(80) NOT NULL DEFAULT 'Outros', is_combo boolean NOT NULL DEFAULT false, combo_items text[] NOT NULL DEFAULT '{}',
   active boolean NOT NULL DEFAULT true, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now()
 );
