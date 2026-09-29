@@ -1,6 +1,6 @@
 import React from 'react';
 import {useApp} from '../../context/AppContext';
-import {Users,CalendarDays,Clock3,DollarSign,TrendingUp,UserCheck,ArrowUpRight,ChevronRight,Wallet,Star,AlertTriangle,CalendarClock} from 'lucide-react';
+import {Users,CalendarDays,Clock3,DollarSign,TrendingUp,UserCheck,ArrowUpRight,ChevronRight,Wallet,Star,AlertTriangle,CalendarClock,Scissors} from 'lucide-react';
 import {ResponsiveContainer,AreaChart,Area,XAxis,YAxis,Tooltip,CartesianGrid} from 'recharts';
 
 const money=(v:number)=>`R$ ${v.toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
